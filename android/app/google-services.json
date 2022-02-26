@@ -1,0 +1,162 @@
+{
+  "project_info": {
+    "project_number": "735887246149",
+    "firebase_url": "https://fashionsgh-84af1-default-rtdb.firebaseio.com",
+    "project_id": "fashionsgh-84af1",
+    "storage_bucket": "fashionsgh-84af1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:735887246149:android:a5f0c890312ce6975c742c",
+        "android_client_info": {
+          "package_name": "com.fahion.diva"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "735887246149-li2m86e27tetso4afuk78sdbh1tcbdf7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fahion.diva",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "735887246149-v0be9bb59hns84vu0mkm3esvuta7a2gr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fahion.diva",
+            "certificate_hash": "75d0da4e63c3f2497dd0ea7cfcfcddae48e35e70"
+          }
+        },
+        {
+          "client_id": "735887246149-fp1h8ulubd38c27fi0v35v29msspfhto.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_JK6lf0TV4QhlO8n6kYIf5IRsXGQuqlo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "735887246149-fp1h8ulubd38c27fi0v35v29msspfhto.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "735887246149-7qmeu107mt7m2ovciqn3kimgrcpj77cl.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.fahion.diva",
+                "app_store_id": "1581824680"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:735887246149:android:9da602865bd719755c742c",
+        "android_client_info": {
+          "package_name": "com.fashion"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "735887246149-e2oj8jttmmef15rml7debtk8tptkhbcm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fashion",
+            "certificate_hash": "75d0da4e63c3f2497dd0ea7cfcfcddae48e35e70"
+          }
+        },
+        {
+          "client_id": "735887246149-i14fbioqh3kpckpseg1lkf7mm8e5ugvq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fashion",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "735887246149-fp1h8ulubd38c27fi0v35v29msspfhto.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_JK6lf0TV4QhlO8n6kYIf5IRsXGQuqlo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "735887246149-fp1h8ulubd38c27fi0v35v29msspfhto.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "735887246149-7qmeu107mt7m2ovciqn3kimgrcpj77cl.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.fahion.diva",
+                "app_store_id": "1581824680"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:735887246149:android:0918dd0d24975a1f5c742c",
+        "android_client_info": {
+          "package_name": "com.fashion.pal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "735887246149-7lchat3ja6krdprmecdi9rfc8nkjnn9o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fashion.pal",
+            "certificate_hash": "393f21ae1a83e5108bdb4083428b4bd0ab4e534e"
+          }
+        },
+        {
+          "client_id": "735887246149-fp1h8ulubd38c27fi0v35v29msspfhto.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_JK6lf0TV4QhlO8n6kYIf5IRsXGQuqlo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "735887246149-fp1h8ulubd38c27fi0v35v29msspfhto.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "735887246149-7qmeu107mt7m2ovciqn3kimgrcpj77cl.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.fahion.diva",
+                "app_store_id": "1581824680"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
