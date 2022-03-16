@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fashionpal/SplashScreen.dart';
 import 'package:fashionpal/UI/AddSewingScreen.dart';
 import 'package:fashionpal/UI/SewingDetailsScreen.dart';
 import 'package:flutter/cupertino.dart';
@@ -34,9 +35,8 @@ class SewingItem extends StatelessWidget {
                     context,
                     new BouncyPageRoute(
                         widget: EditSewingScreen(
-                          documentFields: documentSnapshot,
-
-                        )));
+                      documentFields: documentSnapshot,
+                    )));
               },
               child: Container(
                 width: MediaQuery.of(context).size.width,
@@ -46,100 +46,148 @@ class SewingItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
                       Card(
-                        shape: RoundedRectangleBorder(
+                        shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(10.0),
                                 bottomLeft: Radius.circular(10.0))),
                         elevation: 0.0,
                         color: light_grey_theme,
-                        child: Column(
-                          children: <Widget>[
-                            Container(
-                                padding: EdgeInsets.only(
-                                    top: 10, bottom: 5, left: 10, right: 10),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                        (documentSnapshot?.data()
-                                                    as Map)['sewingData']
-                                                ['customerData']['firstName']
-                                            .toString(),
-                                        style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.bold),
-                                        textAlign: TextAlign.center),
-                                    Container(
-                                        margin: EdgeInsets.only(
-                                            left: 10, right: 10),
+                        child: Container(
+                            padding: const EdgeInsets.only(
+                                top: 10, bottom: 5, left: 10, right: 10),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                    (documentSnapshot?.data()
+                                                as Map)['sewingData']
+                                            ['customerData']['firstName']
+                                        .toString(),
+                                    style: const TextStyle(
                                         color: Colors.black,
-                                        height: 1),
-                                    Text(
-                                        (documentSnapshot?.data()
-                                                    as Map)['sewingData']
-                                                ['customerData']['phoneNumber']
-                                            .toString(),
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.normal,
-                                        ),
-                                        textAlign: TextAlign.center),
-                                  ],
-                                )),
-                          ],
-                        ),
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.center),
+                                Container(
+                                    margin: const EdgeInsets.only(
+                                        left: 10, right: 10),
+                                    color: Colors.black,
+                                    height: 1),
+                                Flexible(
+                                  child: isStaffUser
+                                      ? (permissionList[0].isGranted ?? false)
+                                          ? Container(
+                                              alignment: Alignment.centerRight,
+                                              padding:
+                                                  EdgeInsets.only(right: 20),
+                                              child: Text(
+                                                  (documentSnapshot?.data()
+                                                                      as Map)[
+                                                                  'sewingData']
+                                                              ['customerData']
+                                                          ['phoneNumber']
+                                                      .toString(),
+                                                  style: const TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                  ),
+                                                  textAlign: TextAlign.center))
+                                          : Container()
+                                      : Text(
+                                          (documentSnapshot?.data()
+                                                          as Map)['sewingData']
+                                                      ['customerData']
+                                                  ['phoneNumber']
+                                              .toString(),
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.normal,
+                                          ),
+                                          textAlign: TextAlign.center),
+                                ),
+                              ],
+                            )),
                       ),
-                      Card(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(10.0),
-                                bottomRight: Radius.circular(10.0))),
-                        elevation: 0.0,
-                        color: Colors.red,
-                        child: Column(
-                          children: <Widget>[
-                            Container(
-                                padding: EdgeInsets.only(
-                                    top: 10, bottom: 5, left: 10, right: 10),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                        (documentSnapshot?.data()
-                                                    as Map)['sewingData']
-                                                ['customerData']['phoneNumber']
-                                            .toString(),
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.normal,
-                                        ),
-                                        textAlign: TextAlign.center),
-                                    Text(
-                                        (documentSnapshot?.data()
-                                                as Map)['sewingData']['title']
-                                            .toString(),
-                                        style: TextStyle(
-                                            color: Colors.black,
+                      Flexible(
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(10.0),
+                                  bottomRight: Radius.circular(10.0))),
+                          elevation: 0.0,
+                          color: getSetColor((documentSnapshot?.data()
+                              as Map)['sewingData']['status']),
+                          child: Column(
+                            children: <Widget>[
+                              Container(
+                                  padding: EdgeInsets.only(
+                                      top: 10, bottom: 5, left: 10, right: 10),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      isStaffUser
+                                          ? (permissionList[0].isGranted ?? false)
+                                          ?Text(
+                                          (documentSnapshot?.data()
+                                          as Map)['sewingData']
+                                          ['customerData']
+                                          ['phoneNumber']
+                                              .toString(),
+                                          maxLines: 1,
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.normal,
+                                          ),
+                                          textAlign: TextAlign.center)
+                                          : Container()
+                                          :Text(
+                                          (documentSnapshot?.data()
+                                                          as Map)['sewingData']
+                                                      ['customerData']
+                                                  ['phoneNumber']
+                                              .toString(),
+                                          maxLines: 1,
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.normal,
+                                          ),
+                                          textAlign: TextAlign.center),
+                                      Text(
+                                          (documentSnapshot?.data()
+                                                  as Map)['sewingData']['title']
+                                              .toString(),
+                                          maxLines: 1,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold),
+                                          textAlign: TextAlign.center),
+                                      Container(
+                                          margin: EdgeInsets.only(
+                                              left: 10, right: 10),
+                                          color: Colors.white,
+                                          height: 1),
+                                      Text(
+                                          (documentSnapshot?.data()
+                                                  as Map)['sewingData']
+                                              ['description'],
+                                          maxLines: 1,
+                                          style: TextStyle(
+                                            color: Colors.white,
                                             fontSize: 12,
-                                            fontWeight: FontWeight.bold),
-                                        textAlign: TextAlign.center),
-                                    Container(
-                                        margin: EdgeInsets.only(
-                                            left: 10, right: 10),
-                                        color: Colors.black,
-                                        height: 1),
-                                    Text("The",
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                        textAlign: TextAlign.center),
-                                  ],
-                                )),
-                          ],
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          textAlign: TextAlign.center),
+                                    ],
+                                  )),
+                            ],
+                          ),
                         ),
                       )
                     ]),
@@ -245,7 +293,62 @@ class SewingItem extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    InkWell(
+                    isStaffUser
+                        ? (permissionList[0].isGranted ?? false)
+                        ?     InkWell(
+                    child: Container(
+                      margin: EdgeInsets.only(top: 5, left: 10),
+                      child: Image.asset(
+                        "images/ic_menu.png",
+                        fit: BoxFit.fill,
+                        color: Colors.grey,
+                        height: 25.0,
+                        width: 25.0,
+                      ),
+                    ),
+                    onTapDown: (details) {
+                      showMenu<String>(
+                        context: context,
+                        position: RelativeRect.fromLTRB(
+                          details.globalPosition.dx,
+                          details.globalPosition.dy,
+                          details.globalPosition.dx,
+                          details.globalPosition.dy,
+                        ),
+                        //position where you want to show the menu on screen
+                        items: [
+                          PopupMenuItem<String>(
+                              child: const Text('Edit'), value: '1'),
+                          PopupMenuItem<String>(
+                              child: const Text('Delete'), value: '2'),
+                        ],
+                        elevation: 8.0,
+                      ).then((itemSelected) async {
+                        if (itemSelected == null) return;
+
+                        if (itemSelected == "1") {
+                          //code here
+
+                          Navigator.push(
+                              context,
+                              new BouncyPageRoute(
+                                  widget: EditSewingScreen(
+                                    documentFields: documentSnapshot,
+                                  )));
+                        } else if (itemSelected == "2") {
+                          //code here
+                          await FirebaseFirestore.instance
+                              .collection('sewings')
+                              .doc(documentSnapshot?.id)
+                              .delete();
+                        } else {
+                          //code here
+                        }
+                      });
+                    },
+                    onTap: () {})
+                        : Container()
+                        :    InkWell(
                         child: Container(
                           margin: EdgeInsets.only(top: 5, left: 10),
                           child: Image.asset(
@@ -284,10 +387,7 @@ class SewingItem extends StatelessWidget {
                                   new BouncyPageRoute(
                                       widget: EditSewingScreen(
                                     documentFields: documentSnapshot,
-
                                   )));
-
-
                             } else if (itemSelected == "2") {
                               //code here
                               await FirebaseFirestore.instance
@@ -328,7 +428,8 @@ class SewingItem extends StatelessWidget {
                                         ['status']
                                     .toString(),
                                 style: TextStyle(
-                                  color: Colors.red,
+                                  color: getSetColor((documentSnapshot?.data()
+                                      as Map)['sewingData']['status']),
                                   fontSize: 12,
                                   fontWeight: FontWeight.normal,
                                 ),
@@ -341,5 +442,21 @@ class SewingItem extends StatelessWidget {
         ]),
       ),
     );
+  }
+
+  Color getSetColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'order':
+        return Colors.red;
+      case 'sewing':
+        return Colors.lightBlueAccent;
+      case 'completed':
+        return Colors.blue;
+      case 'delivered':
+        return Colors.green;
+      case 'cutting':
+        return Colors.yellow;
+    }
+    return Colors.black;
   }
 }

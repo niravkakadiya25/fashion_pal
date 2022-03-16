@@ -22,13 +22,13 @@
       <option name="url" value="https://www.jitpack.io" />
     </remote-repository>
     <remote-repository>
-      <option name="id" value="Google7" />
-      <option name="name" value="Google7" />
+      <option name="id" value="Google9" />
+      <option name="name" value="Google9" />
       <option name="url" value="https://dl.google.com/dl/android/maven2/" />
     </remote-repository>
     <remote-repository>
-      <option name="id" value="BintrayJCenter2" />
-      <option name="name" value="BintrayJCenter2" />
+      <option name="id" value="BintrayJCenter3" />
+      <option name="name" value="BintrayJCenter3" />
       <option name="url" value="https://jcenter.bintray.com/" />
     </remote-repository>
     <remote-repository>

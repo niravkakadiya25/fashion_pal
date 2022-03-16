@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fashionpal/SplashScreen.dart';
 import 'package:fashionpal/UI/EditProfileScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -76,32 +77,61 @@ class _SewingDetailsScreenState extends State<SewingDetailsScreen> {
                       ),
                     ),
                     Expanded(
-                      child: Container(
-                        alignment: Alignment.centerRight,
-                        padding: EdgeInsets.only(right: 20),
-                        child: Container(
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  new BouncyPageRoute(
-                                      widget: AddSewingNewScreen(
-                                    isFromEdit: true,
-                                    sewDetails: widget.documentFields,
-                                    customerDocumentSnapshot:
-                                        widget.customerDocumentSnapshot,
-                                    isFromCustomerScreen: true,
-                                  )));
-                            },
-                            child: Image.asset(
-                              "images/ic_edit.png",
-                              color: Colors.white,
-                              height: 20,
-                              width: 20,
+                      child: isStaffUser
+                          ? (permissionList[0].isGranted ?? false)
+                              ? Container(
+                                  alignment: Alignment.centerRight,
+                                  padding: EdgeInsets.only(right: 20),
+                                  child: Container(
+                                    child: InkWell(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            new BouncyPageRoute(
+                                                widget: AddSewingNewScreen(
+                                              isFromEdit: true,
+                                              sewDetails: widget.documentFields,
+                                              customerDocumentSnapshot: widget
+                                                  .customerDocumentSnapshot,
+                                              isFromCustomerScreen: true,
+                                            )));
+                                      },
+                                      child: Image.asset(
+                                        "images/ic_edit.png",
+                                        color: Colors.white,
+                                        height: 20,
+                                        width: 20,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : Container()
+                          : Container(
+                              alignment: Alignment.centerRight,
+                              padding: EdgeInsets.only(right: 20),
+                              child: Container(
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        new BouncyPageRoute(
+                                            widget: AddSewingNewScreen(
+                                          isFromEdit: true,
+                                          sewDetails: widget.documentFields,
+                                          customerDocumentSnapshot:
+                                              widget.customerDocumentSnapshot,
+                                          isFromCustomerScreen: true,
+                                        )));
+                                  },
+                                  child: Image.asset(
+                                    "images/ic_edit.png",
+                                    color: Colors.white,
+                                    height: 20,
+                                    width: 20,
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                      ),
                     )
                   ],
                 ),
@@ -131,9 +161,11 @@ class _SewingDetailsScreenState extends State<SewingDetailsScreen> {
                               padding: EdgeInsets.only(left: 10),
                               child: Text(
                                 (widget.documentFields?.data()
-                                        as Map)['sewingData']['customerData']['firstName'] +
+                                            as Map)['sewingData']
+                                        ['customerData']['firstName'] +
                                     (widget.documentFields?.data()
-                                        as Map)['sewingData']['customerData']['lastName'],
+                                            as Map)['sewingData']
+                                        ['customerData']['lastName'],
                                 style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 16,
@@ -162,14 +194,27 @@ class _SewingDetailsScreenState extends State<SewingDetailsScreen> {
                           Expanded(
                             child: Container(
                               padding: EdgeInsets.only(left: 10),
-                              child: Text(
-                                (widget.documentFields?.data()
-                                    as Map)['sewingData']['customerData']['phoneNumber'],
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold),
-                              ),
+                              child: isStaffUser
+                                  ? (permissionList[0].isGranted ?? false)
+                                      ? Text(
+                                          (widget.documentFields?.data()
+                                                  as Map)['sewingData']
+                                              ['customerData']['phoneNumber'],
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        )
+                                      : Container()
+                                  : Text(
+                                      (widget.documentFields?.data()
+                                              as Map)['sewingData']
+                                          ['customerData']['phoneNumber'],
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    ),
                             ),
                           )
                         ],

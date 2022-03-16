@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_search/dropdown_search.dart';
+import 'package:fashionpal/UI/image.dart';
 import 'package:fashionpal/Utils/ProgressDialog.dart';
+import 'package:fashionpal/Utils/constants.dart';
 import 'package:fashionpal/Utils/sharPreference.dart';
 import 'package:fashionpal/colors.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -12,18 +14,21 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class AddSewingNewScreen extends StatefulWidget {
   final bool? isFromEdit, isFromCustomerScreen;
   final DocumentSnapshot? sewDetails;
   final QueryDocumentSnapshot? customerDocumentSnapshot;
+  final QueryDocumentSnapshot? staffDocumentSnapshot;
 
   const AddSewingNewScreen(
       {Key? key,
       this.isFromEdit = false,
       this.sewDetails,
       this.isFromCustomerScreen,
-      this.customerDocumentSnapshot})
+      this.customerDocumentSnapshot,
+      this.staffDocumentSnapshot})
       : super(key: key);
 
   @override
@@ -52,6 +57,8 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
   }
 
   QuerySnapshot? snapshot;
+  QuerySnapshot? staffSnapshot;
+  QueryDocumentSnapshot? selectedStaffSnapshot;
   QueryDocumentSnapshot? selectedSnapshot;
 
   getData() async {
@@ -60,9 +67,19 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
         .where('ownerId', isEqualTo: await getOwnerId())
         .get();
 
-    print(snapshot?.docs.length);
+    staffSnapshot = await FirebaseFirestore.instance
+        .collection('staff')
+        .where('ownerId', isEqualTo: await getOwnerId())
+        .get();
+
     if (widget.isFromCustomerScreen ?? false) {
       selectedSnapshot = widget.customerDocumentSnapshot;
+      selectedStaffSnapshot = widget.staffDocumentSnapshot;
+      sewNumber.text = (widget.customerDocumentSnapshot?.data() as Map) == null
+          ? ''
+          : (widget.customerDocumentSnapshot?.data() as Map)['customerData']
+                  ['phoneNumber']
+              .toString();
     }
     if (widget.isFromEdit ?? false) {
       await FirebaseFirestore.instance
@@ -71,8 +88,16 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
               isEqualTo: (widget.sewDetails?.data() as Map)['customerId'] ?? '')
           .get()
           .then((value) {
-        print(value.docs.length);
-        selectedSnapshot = value.docs.first;
+        if (value.docs.isNotEmpty) selectedSnapshot = value.docs.first;
+      });
+
+      await FirebaseFirestore.instance
+          .collection('staff')
+          .where('staffId',
+              isEqualTo: (widget.sewDetails?.data() as Map)['staffId'] ?? '')
+          .get()
+          .then((value) {
+        if (value.docs.isNotEmpty) selectedStaffSnapshot = value.docs.first;
       });
 
       sewTitle.text =
@@ -89,13 +114,25 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
           (widget.sewDetails?.data() as Map)['sewingData']['payment'] ?? '';
       reminder.text =
           (widget.sewDetails?.data() as Map)['sewingData']['reminder'] ?? '';
+      styles = (widget.sewDetails?.data() as Map)['sewingData']['styles'] ?? [];
+      fabrics =
+          (widget.sewDetails?.data() as Map)['sewingData']['fabrics'] ?? [];
+
+      payment.text =
+          (widget.sewDetails?.data() as Map)['sewingData']['amountPaid'] ?? [];
+
+      sewNumber.text = (widget.sewDetails?.data() as Map) == null
+          ? ''
+          : (widget.sewDetails?.data() as Map)['sewingData']['customerData']
+                  ['phoneNumber']
+              .toString();
     }
     setState(() {});
   }
 
   Map<String, TextEditingController> _controllerMap = Map();
-  List<String> fabrics = [];
-  List<String> styles = [];
+  List fabrics = [];
+  List styles = [];
 
   @override
   Widget build(BuildContext context) {
@@ -295,12 +332,30 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                             padding: const EdgeInsets.only(top: 10),
                             child: Container(
                               margin: EdgeInsets.only(top: 15),
-                              child: DropdownSearch<String>(
+                              child: DropdownSearch<QueryDocumentSnapshot>(
                                 mode: Mode.MENU,
                                 showSelectedItem: false,
-                                items: ["Staff1", "Staff2", "Staff3"],
-                                label: "Select Staff",
-                                hint: "Select",
+                                items: staffSnapshot?.docs,
+                                label: selectedStaffSnapshot == null
+                                    ? 'Admin'
+                                    : "Select Staff",
+                                hint: selectedStaffSnapshot == null
+                                    ? 'Admin'
+                                    : "Select Staff",
+
+                                selectedItem: selectedStaffSnapshot,
+                                itemAsString: (item) {
+                                  return (item.data() as Map)['staffData']
+                                          ['firstName'] +
+                                      ' ' +
+                                      (item.data() as Map)['staffData']
+                                          ['lastName'];
+                                },
+                                onChanged: (QueryDocumentSnapshot? value) {
+                                  selectedStaffSnapshot = value;
+
+                                  setState(() {});
+                                },
                                 // validator: (val) =>
                                 // val == null? _snackbar("Select Height Unit") : null,
                                 // onSaved: (newValue) {
@@ -325,21 +380,76 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                     color: light_grey_theme,
                                     child: Column(
                                       children: <Widget>[
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 5),
-                                          child: Container(
-                                            height: 20,
-                                            child: Container(
-                                                child: Text(
-                                              "Measurement",
-                                              textAlign: TextAlign.left,
-                                              style: TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.black),
-                                            )),
-                                          ),
+                                        Row(
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.only(top: 5),
+                                              child: Container(
+                                                height: 20,
+                                                child: Container(
+                                                    child: Text(
+                                                  "Measurement",
+                                                  textAlign: TextAlign.left,
+                                                  style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.black),
+                                                )),
+                                              ),
+                                            ),
+                                            GestureDetector(
+                                              onTap: () async {
+                                                QuerySnapshot<
+                                                        Map<String, dynamic>>
+                                                    snapshot =
+                                                    await FirebaseFirestore
+                                                        .instance
+                                                        .collection('sewings')
+                                                        .get();
+                                                if (snapshot.docs.isNotEmpty) {
+                                                  for (int i = 0;
+                                                      i < snapshot.docs.length;
+                                                      i++) {
+                                                    if (snapshot.docs[i].data()[
+                                                            'customerId'] ==
+                                                        (selectedSnapshot
+                                                                    ?.data()
+                                                                as Map)[
+                                                            'customerId']) {
+                                                      print('load');
+                                                      loadPreviousMeasurement =
+                                                          true;
+                                                      snapshots =
+                                                          snapshot.docs[i];
+                                                      setState(() {});
+                                                      break;
+                                                    }
+                                                  }
+                                                }
+                                              },
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 5),
+                                                child: Container(
+                                                  height: 20,
+                                                  child: Container(
+                                                      child: Text(
+                                                    "Load Previous",
+                                                    textAlign: TextAlign.left,
+                                                    style: TextStyle(
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.black),
+                                                  )),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
                                         ),
                                         FutureBuilder<
                                                 QuerySnapshot<
@@ -359,9 +469,7 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                               if (!snapshot.hasData) {
                                                 return Container();
                                               }
-                                              print(
-                                                  snapshot.data?.docs.length ??
-                                                      0);
+
                                               return Container(
                                                 width: MediaQuery.of(context)
                                                         .size
@@ -380,7 +488,18 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                                         NeverScrollableScrollPhysics(),
                                                     itemBuilder:
                                                         (context, index) {
-                                                      return Container(
+                                                      return GestureDetector(
+                                                        onTap: () {
+                                                          showDialogWithFields(
+                                                              snapshot.data
+                                                                      ?.docs[index]
+                                                                      .data()[
+                                                                  'parentTitle'],
+                                                              snapshot
+                                                                  .data
+                                                                  ?.docs[index]
+                                                                  .id);
+                                                        },
                                                         child: Padding(
                                                           padding:
                                                               const EdgeInsets
@@ -398,33 +517,34 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                                                         .data()[
                                                                     'parentTitle'],
                                                                 style: TextStyle(
-                                                                    fontSize:
-                                                                        18,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w500,
-                                                                    color: Colors
-                                                                        .black),
+                                                                    fontSize: 18,
+                                                                    fontWeight: FontWeight.w500,
+                                                                    color: loadPreviousMeasurement
+                                                                        ? snapshots == null
+                                                                            ? Colors.black
+                                                                            : ((snapshots?.data() as Map)['sewingData']['measurements']) == null
+                                                                                ? Colors.red
+                                                                                : (((snapshots?.data() as Map)['sewingData']['measurements'] as Map).keys.contains(snapshot.data?.docs[index].data()['parentTitle']) ? Colors.green : Colors.black)
+                                                                        : (widget.sewDetails?.data() as Map) == null
+                                                                            ? Colors.black
+                                                                            : ((widget.sewDetails?.data() as Map)['sewingData']['measurements']) == null
+                                                                                ? Colors.red
+                                                                                : (((widget.sewDetails?.data() as Map)['sewingData']['measurements'] as Map).keys.contains(snapshot.data?.docs[index].data()['parentTitle']) ? Colors.green : Colors.black)),
                                                               ),
-                                                              GestureDetector(
-                                                                onTap:
-                                                                    () async {
-                                                                  showDialogWithFields(
-                                                                      snapshot.data?.docs[index]
-                                                                              .data()[
-                                                                          'parentTitle'],
-                                                                      snapshot
-                                                                          .data
-                                                                          ?.docs[
-                                                                              index]
-                                                                          .id);
-                                                                },
-                                                                child:
-                                                                    Container(
-                                                                  child: Icon(
-                                                                      Icons
-                                                                          .add),
-                                                                ),
+                                                              Container(
+                                                                child: Icon(
+                                                                    Icons.add,
+                                                                    color: loadPreviousMeasurement
+                                                                        ? snapshots == null
+                                                                            ? Colors.black
+                                                                            : ((snapshots?.data() as Map)['sewingData']['measurements']) == null
+                                                                                ? Colors.red
+                                                                                : (((snapshots?.data() as Map)['sewingData']['measurements'] as Map).keys.contains(snapshot.data?.docs[index].data()['parentTitle']) ? Colors.green : Colors.black)
+                                                                        : (widget.sewDetails?.data() as Map) == null
+                                                                            ? Colors.black
+                                                                            : ((widget.sewDetails?.data() as Map)['sewingData']['measurements']) == null
+                                                                                ? Colors.red
+                                                                                : (((widget.sewDetails?.data() as Map)['sewingData']['measurements'] as Map).keys.contains(snapshot.data?.docs[index].data()['parentTitle']) ? Colors.green : Colors.black)),
                                                               ),
                                                             ],
                                                           ),
@@ -776,57 +896,131 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                               left: 10,
                                               right: 10),
                                           child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
                                             children: [
                                               Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
                                                 children: [
-                                                  Text('Febric'),
-                                                  GestureDetector(
-                                                    onTap: () {
-                                                      _showChoiceDialog(
-                                                          context, true);
-                                                    },
-                                                    child: Container(
-                                                      margin: EdgeInsets.only(
-                                                        top: 10,
-                                                      ),
-                                                      child: fabrics.isEmpty
-                                                          ? Image.asset(
+                                                  Text('Fabric'),
+                                                  Container(
+                                                    margin: EdgeInsets.only(
+                                                      top: 10,
+                                                    ),
+                                                    child: fabrics.isEmpty
+                                                        ? GestureDetector(
+                                                            onTap: () {
+                                                              _showChoiceDialog(
+                                                                  context,
+                                                                  true);
+                                                            },
+                                                            child: Image.asset(
                                                               'images/ic_style.png',
                                                               width: 120,
                                                               height: 120,
-                                                            )
-                                                          : Container(
-                                                              height: 120,
-                                                              width:
-                                                                  MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .width,
-                                                              child: ListView
-                                                                  .builder(
-                                                                itemCount:
-                                                                    fabrics
-                                                                        .length,
-                                                                shrinkWrap:
-                                                                    true,
-                                                                scrollDirection:
-                                                                    Axis.horizontal,
-                                                                itemBuilder:
-                                                                    (context,
-                                                                        index) {
-                                                                  return Container(
-                                                                    child: Image
-                                                                        .network(
-                                                                            fabrics[index]),
-                                                                  );
-                                                                },
-                                                              ),
                                                             ),
-                                                    ),
+                                                          )
+                                                        : Container(
+                                                            height: 120,
+                                                            width:
+                                                                MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width,
+                                                            child: Row(
+                                                              children: [
+                                                                GestureDetector(
+                                                                  onTap: () {
+                                                                    _showChoiceDialog(
+                                                                        context,
+                                                                        true);
+                                                                  },
+                                                                  child:
+                                                                      Container(
+                                                                    height: 120,
+                                                                    width: 100,
+                                                                    color: Colors
+                                                                        .black,
+                                                                    child: Icon(
+                                                                      Icons.add,
+                                                                      color: Colors
+                                                                          .white,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                SizedBox(
+                                                                  width: 20,
+                                                                ),
+                                                                ListView
+                                                                    .builder(
+                                                                  physics:
+                                                                      NeverScrollableScrollPhysics(),
+                                                                  itemCount:
+                                                                      fabrics
+                                                                          .length,
+                                                                  shrinkWrap:
+                                                                      true,
+                                                                  scrollDirection:
+                                                                      Axis.horizontal,
+                                                                  itemBuilder:
+                                                                      (context,
+                                                                          index) {
+                                                                    return Stack(
+                                                                      children: [
+                                                                        GestureDetector(
+                                                                          onTap:
+                                                                              () {
+                                                                            Navigator.push(
+                                                                                context,
+                                                                                MaterialPageRoute(
+                                                                                  builder: (context) => FullImage(imageUrl: fabrics[index]),
+                                                                                ));
+                                                                          },
+                                                                          child:
+                                                                              Container(
+                                                                            height:
+                                                                                120,
+                                                                            width:
+                                                                                100,
+                                                                            child:
+                                                                                Image.network(
+                                                                              fabrics[index],
+                                                                              fit: BoxFit.contain,
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                        Positioned(
+                                                                          right:
+                                                                              0,
+                                                                          child:
+                                                                              GestureDetector(
+                                                                            child:
+                                                                                Container(
+                                                                              color: Colors.black,
+                                                                              child: Icon(
+                                                                                Icons.close,
+                                                                                color: Colors.white,
+                                                                              ),
+                                                                            ),
+                                                                            onTap:
+                                                                                () {
+                                                                              fabrics.removeAt(index);
+                                                                              setState(() {});
+                                                                            },
+                                                                          ),
+                                                                        )
+                                                                      ],
+                                                                    );
+                                                                  },
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
                                                   ),
                                                 ],
                                               ),
@@ -837,49 +1031,117 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                                     MainAxisAlignment.start,
                                                 children: [
                                                   Text('Style'),
-                                                  GestureDetector(
-                                                    onTap: () {
-                                                      _showChoiceDialog(
-                                                          context, false);
-                                                    },
-                                                    child: Container(
-                                                      margin: EdgeInsets.only(
-                                                        top: 10,
-                                                      ),
-                                                      child: styles.isEmpty
-                                                          ? Image.asset(
+                                                  Container(
+                                                    margin: EdgeInsets.only(
+                                                      top: 10,
+                                                    ),
+                                                    child: styles.isEmpty
+                                                        ? GestureDetector(
+                                                            onTap: () {
+                                                              _showChoiceDialog(
+                                                                  context,
+                                                                  false);
+                                                            },
+                                                            child: Image.asset(
                                                               'images/ic_style.png',
                                                               width: 120,
                                                               height: 120,
-                                                            )
-                                                          : Container(
-                                                              height: 120,
-                                                              width:
-                                                                  MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .width,
-                                                              child: ListView
-                                                                  .builder(
-                                                                itemCount:
-                                                                    styles
-                                                                        .length,
-                                                                shrinkWrap:
-                                                                    true,
-                                                                scrollDirection:
-                                                                    Axis.horizontal,
-                                                                itemBuilder:
-                                                                    (context,
-                                                                        index) {
-                                                                  return Container(
-                                                                    child: Image
-                                                                        .network(
-                                                                            styles[index]),
-                                                                  );
-                                                                },
-                                                              ),
                                                             ),
-                                                    ),
+                                                          )
+                                                        : Container(
+                                                            height: 120,
+                                                            width:
+                                                                MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width,
+                                                            child: Row(
+                                                              children: [
+                                                                GestureDetector(
+                                                                  onTap: () {
+                                                                    _showChoiceDialog(
+                                                                        context,
+                                                                        false);
+                                                                  },
+                                                                  child:
+                                                                      Container(
+                                                                    height: 120,
+                                                                    width: 100,
+                                                                    color: Colors
+                                                                        .black,
+                                                                    child: Icon(
+                                                                      Icons.add,
+                                                                      color: Colors
+                                                                          .white,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                SizedBox(
+                                                                  width: 20,
+                                                                ),
+                                                                ListView
+                                                                    .builder(
+                                                                  itemCount:
+                                                                      styles
+                                                                          .length,
+                                                                  shrinkWrap:
+                                                                      true,
+                                                                  scrollDirection:
+                                                                      Axis.horizontal,
+                                                                  itemBuilder:
+                                                                      (context,
+                                                                          index) {
+                                                                    return Stack(
+                                                                      children: [
+                                                                        GestureDetector(
+                                                                          child:
+                                                                              Container(
+                                                                            height:
+                                                                                120,
+                                                                            width:
+                                                                                100,
+                                                                            child:
+                                                                                Image.network(
+                                                                              styles[index],
+                                                                              fit: BoxFit.contain,
+                                                                            ),
+                                                                          ),
+                                                                          onTap:
+                                                                              () {
+                                                                            Navigator.push(
+                                                                                context,
+                                                                                MaterialPageRoute(
+                                                                                  builder: (context) => FullImage(imageUrl: styles[index]),
+                                                                                ));
+                                                                          },
+                                                                        ),
+                                                                        Positioned(
+                                                                          right:
+                                                                              0,
+                                                                          child:
+                                                                              GestureDetector(
+                                                                            child:
+                                                                                Container(
+                                                                              color: Colors.black,
+                                                                              child: Icon(
+                                                                                Icons.close,
+                                                                                color: Colors.white,
+                                                                              ),
+                                                                            ),
+                                                                            onTap:
+                                                                                () {
+                                                                              styles.removeAt(index);
+                                                                              setState(() {});
+                                                                            },
+                                                                          ),
+                                                                        )
+                                                                      ],
+                                                                    );
+                                                                  },
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
                                                   ),
                                                 ],
                                               ),
@@ -918,8 +1180,7 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                     margin: EdgeInsets.only(top: 15),
                                     child: TextFormField(
                                       controller: cost,
-                                      keyboardType:
-                                          TextInputType.visiblePassword,
+                                      keyboardType: TextInputType.number,
                                       decoration: InputDecoration(
                                         focusedBorder: UnderlineInputBorder(
                                           borderSide:
@@ -935,6 +1196,37 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                           ),
                           Padding(
                             padding: const EdgeInsets.only(left: 2, top: 10),
+                            child: Container(
+                              margin: EdgeInsets.only(top: 15),
+                              child: TextFormField(
+                                onChanged: (value) {
+                                  if (cost.text.trim().isEmpty) {
+                                    paymentStatus.text = 'No payment';
+                                  } else {
+                                    if (value.isEmpty) {
+                                      paymentStatus.text = 'No payment';
+                                    } else if (int.parse(value.trim()) <
+                                        int.parse(cost.text.trim())) {
+                                      paymentStatus.text = 'partially paid';
+                                    } else {
+                                      paymentStatus.text = 'fully paid';
+                                    }
+                                  }
+                                  setState(() {});
+                                },
+                                controller: payment,
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.red),
+                                  ),
+                                  hintText: 'Payment',
+                                ),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 2, top: 10),
                             child: Row(
                               children: [
                                 Expanded(
@@ -944,7 +1236,7 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                       mode: Mode.MENU,
                                       showSelectedItem: false,
                                       items: [
-                                        "ordered",
+                                        "order",
                                         "cutting",
                                         "sewing",
                                         'completed',
@@ -972,11 +1264,12 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                     margin: EdgeInsets.only(top: 15),
                                     child: DropdownSearch<String>(
                                       mode: Mode.MENU,
+                                      enabled: false,
                                       showSelectedItem: false,
                                       items: [
-                                        "Partially payment",
+                                        "partially paid",
                                         "No payment",
-                                        "Full payment",
+                                        "fully paid",
                                       ],
                                       label: "Select Payment Status",
                                       hint: "Payment Status",
@@ -996,27 +1289,6 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                               ],
                             ),
                           ),
-                          paymentStatus.text != 'Partially payment'
-                              ? Container()
-                              : Padding(
-                                  padding:
-                                      const EdgeInsets.only(left: 2, top: 10),
-                                  child: Container(
-                                    margin: EdgeInsets.only(top: 15),
-                                    child: TextFormField(
-                                      controller: payment,
-                                      keyboardType:
-                                          TextInputType.visiblePassword,
-                                      decoration: InputDecoration(
-                                        focusedBorder: UnderlineInputBorder(
-                                          borderSide:
-                                              BorderSide(color: Colors.red),
-                                        ),
-                                        hintText: 'Payment',
-                                      ),
-                                    ),
-                                  ),
-                                ),
                           Padding(
                             padding: const EdgeInsets.only(left: 2, top: 10),
                             child: Row(
@@ -1044,49 +1316,142 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                 Expanded(
                                   child: GestureDetector(
                                     onTap: () async {
-                                      ProgressDialog.showLoaderDialog(context);
+                                      if(sewTitle.text.trim().isEmpty){
+                                        buildErrorDialog(context, '',
+                                            'Please Enter Title',
+                                                () {
+                                              Navigator.pop(context);
+                                            });
+                                      }else {
+                                        ProgressDialog.showLoaderDialog(
+                                            context);
 
-                                      var ownerId = (await getOwnerId());
-
-                                      Map map = {
-                                        'cost': cost.text,
-                                        'createdAt': DateTime.now(),
-                                        'duration': duration.text,
-                                        'description': sewDescription.text,
-                                        'status': order.text,
-                                        'title': sewTitle.text,
-                                        'measurement': sewmap,
-                                        'amountPaid': payment.text,
-                                        'paymentStatus': paymentStatus.text,
-                                        'reminder': reminder.text,
-                                        'phoneNumber': sewNumber.text,
-                                        'customerData': (selectedSnapshot
-                                            ?.data() as Map)['customerData'],
-                                      };
-
-                                      DocumentReference documentReference =
-                                          FirebaseFirestore.instance
-                                              .collection('sewings')
-                                              .doc();
-
-                                      await FirebaseFirestore.instance
-                                          .collection('sewings')
-                                          .doc((widget.isFromEdit ?? false)
-                                              ? widget.sewDetails?.id
-                                              : documentReference.id)
-                                          .set({
-                                        'deletedForCustomer': false,
-                                        'customerId': (selectedSnapshot?.data()
-                                            as Map)['customerId'],
-                                        'sewingId': documentReference.id,
-                                        'ownerId': ownerId.toString(),
-                                        'sewingData': map,
-                                        'fabrics': fabrics,
-                                        'styles': styles,
-                                      }, SetOptions(merge: true));
-
-                                      Navigator.of(context)
-                                          .popUntil((route) => route.isFirst);
+                                        Map map;
+                                        if (widget.isFromEdit ?? false) {
+                                          if (sewmap.isEmpty) {
+                                            map = {
+                                              'cost': cost.text.isEmpty
+                                                  ? 0
+                                                  : int.parse(cost.text),
+                                              'createdAt': DateTime.now(),
+                                              'duration': duration.text,
+                                              'description': sewDescription
+                                                  .text,
+                                              'status': order.text,
+                                              'title': sewTitle.text,
+                                              'amountPaid': payment.text.isEmpty
+                                                  ? 0
+                                                  : int.parse(payment.text),
+                                              'paymentStatus': paymentStatus
+                                                  .text,
+                                              'reminder': reminder.text,
+                                              'phoneNumber': sewNumber.text,
+                                              'staffData': selectedStaffSnapshot ==
+                                                  null
+                                                  ? {}
+                                                  : (selectedStaffSnapshot
+                                                  ?.data()
+                                              as Map)['staffData'],
+                                              'customerData': (selectedSnapshot
+                                                  ?.data() as Map)['customerData'],
+                                              'customerName':
+                                              (selectedSnapshot?.data()
+                                              as Map)['customerData']
+                                              ['firstName'],
+                                              'fabrics': fabrics,
+                                              'styles': styles,
+                                            };
+                                            uploadData(map);
+                                            return;
+                                          } else {
+                                            map = {
+                                              'cost': cost.text.isEmpty
+                                                  ? 0
+                                                  : int.parse(cost.text),
+                                              'createdAt': DateTime.now(),
+                                              'duration': duration.text,
+                                              'description': sewDescription
+                                                  .text,
+                                              'status': order.text,
+                                              'title': sewTitle.text,
+                                              'measurements': sewmap,
+                                              'amountPaid': payment.text.isEmpty
+                                                  ? 0
+                                                  : int.parse(payment.text),
+                                              'paymentStatus': paymentStatus
+                                                  .text,
+                                              'reminder': reminder.text,
+                                              'phoneNumber': sewNumber.text,
+                                              'staffData':
+                                              selectedStaffSnapshot == null
+                                                  ? {}
+                                                  : (selectedStaffSnapshot
+                                                  ?.data()
+                                              as Map)['staffData'],
+                                              'customerData':
+                                              (selectedSnapshot?.data()
+                                              as Map)['customerData'],
+                                              'customerName':
+                                              (selectedSnapshot?.data()
+                                              as Map)['customerData']
+                                              ['firstName'],
+                                              'fabrics': fabrics,
+                                              'styles': styles,
+                                            };
+                                            uploadData(map);
+                                            return;
+                                          }
+                                        } else {
+                                          if (sewmap.isNotEmpty) {
+                                            map = {
+                                              'cost': cost.text.isEmpty
+                                                  ? 0
+                                                  : int.parse(cost.text),
+                                              'createdAt': DateTime.now(),
+                                              'duration': duration.text,
+                                              'description': sewDescription
+                                                  .text,
+                                              'status': order.text,
+                                              'title': sewTitle.text,
+                                              'measurements': sewmap,
+                                              'amountPaid': payment.text.isEmpty
+                                                  ? 0
+                                                  : int.parse(payment.text),
+                                              'paymentStatus': paymentStatus
+                                                  .text,
+                                              'reminder': reminder.text,
+                                              'phoneNumber': sewNumber.text,
+                                              'staffData':
+                                              selectedStaffSnapshot == null
+                                                  ? {}
+                                                  : (selectedStaffSnapshot
+                                                  ?.data()
+                                              as Map)['staffData'],
+                                              'customerData':
+                                              (selectedSnapshot?.data()
+                                              as Map)['customerData'],
+                                              'customerName':
+                                              (selectedSnapshot?.data()
+                                              as Map)['customerData']
+                                              ['firstName'],
+                                              'fabrics': fabrics,
+                                              'styles': styles,
+                                            };
+                                            uploadData(map);
+                                            return;
+                                          } else {
+                                            ProgressDialog.dismissDialog(
+                                                context);
+                                            map = {};
+                                            buildErrorDialog(context, '',
+                                                'Please Select atleast one measurement',
+                                                    () {
+                                                  Navigator.pop(context);
+                                                });
+                                            return;
+                                          }
+                                        }
+                                      }
                                     },
                                     child: Container(
                                       margin: EdgeInsets.only(top: 15),
@@ -1114,33 +1479,97 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
       ),
     );
   }
+  uploadData(map) async {
+    var ownerId = (await getOwnerId());
+
+    DocumentReference documentReference =
+    FirebaseFirestore.instance
+        .collection('sewings')
+        .doc();
+
+    await FirebaseFirestore.instance
+        .collection('sewings')
+        .doc((widget.isFromEdit ?? false)
+        ? widget.sewDetails?.id
+        : documentReference.id)
+        .set({
+      'deletedForCustomer': false,
+      'deletedForOwner': false,
+      'customerId': (selectedSnapshot?.data()
+      as Map)['customerId'],
+      'staffId': selectedStaffSnapshot == null
+          ? ''
+          : (selectedStaffSnapshot?.data()
+      as Map)['staffId'],
+      'staffData':
+      selectedStaffSnapshot == null
+          ? {}
+          : (selectedStaffSnapshot?.data()
+      as Map)['staffData'],
+      'sewingId': documentReference.id,
+      'ownerId': ownerId.toString(),
+      'sewingData': map,
+    }, SetOptions(merge: true));
+    Navigator.of(context)
+        .popUntil((route) => route.isFirst);
+  }
 
   Map<String?, List<Map<String, String>>> sewmap = new Map();
 
+  bool loadPreviousMeasurement = false;
+  DocumentSnapshot? loadPreviousSweDeails;
+
+  DocumentSnapshot? snapshots;
+
   showDialogWithFields(parentname, parentId) async {
-    if (widget.isFromEdit ?? false) {
+    _controllerMap.clear();
+    if (loadPreviousMeasurement) {
+      if (snapshots?.exists ?? false) {
+        List list = (snapshots?.data() as Map)['sewingData']['measurements']
+            [parentname];
+        for (int i = 0; i < list.length; i++) {
+          Map element = list[i];
+          element.forEach((key, value) {
+            var textEditor = TextEditingController(text: value);
+            _controllerMap[key] = textEditor;
+          });
+        }
+        List<Map<String, String>> list1 = [];
+        _controllerMap.forEach((key, controller) {
+          list1.add({key: controller.text});
+        });
+
+        sewmap[parentname] = list1;
+      }
+    }
+    if ((widget.isFromEdit ?? false)) {
       DocumentSnapshot snapshot = await FirebaseFirestore.instance
           .collection('sewings')
           .doc(widget.sewDetails?.id)
           .get();
       if (snapshot.exists) {
-        List list =
-            (snapshot.data() as Map)['sewingData']['measurement'][parentname];
+        List? list =
+            (snapshot.data() as Map)['sewingData']['measurements'][parentname];
+
         if (list != null) {
           for (int i = 0; i < list.length; i++) {
             var element = list[i];
-            print('gets ' + element.values.length.toString());
             element.forEach((key, value) {
               var textEditor = TextEditingController(text: value);
               _controllerMap[key] = textEditor;
             });
           }
-          List<Map<String, String>> list1 = [];
-          _controllerMap.forEach((key, controller) {
-            list1.add({key: controller.text});
-          });
-
-          sewmap[parentname] = list1;
+        } else {
+          if (sewmap.isNotEmpty) {
+            if (sewmap[parentname] != null) {
+              sewmap[parentname]?.forEach((element) {
+                element.forEach((key, value) {
+                  var textEditor = TextEditingController(text: value);
+                  _controllerMap[key] = textEditor;
+                });
+              });
+            }
+          }
         }
       }
     }
@@ -1281,9 +1710,8 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
   PickedFile? imageFile = null;
 
   void _openGallery(BuildContext context, isFabric) async {
-    final pickedFile = await ImagePicker().getImage(
-      source: ImageSource.gallery,
-    );
+    final pickedFile = await ImagePicker()
+        .getImage(source: ImageSource.gallery, imageQuality: 50);
     setState(() {
       imageFile = pickedFile!;
     });
@@ -1294,9 +1722,8 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
   }
 
   void _openCamera(BuildContext context, isFabric) async {
-    final pickedFile = await ImagePicker().getImage(
-      source: ImageSource.camera,
-    );
+    final pickedFile = await ImagePicker()
+        .getImage(source: ImageSource.camera, imageQuality: 50);
     setState(() {
       imageFile = pickedFile!;
     });
@@ -1308,7 +1735,8 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
 
   Future uploadImageToFirebase(
       BuildContext context, File _imageFile, isFabric) async {
-    var firebaseStorageRef = FirebaseStorage.instance.ref().child('uploads');
+    var firebaseStorageRef = FirebaseStorage.instance.ref().child(
+        'uploads/${await getOwnerId()}_${DateTime.now().microsecondsSinceEpoch.toString()}_${isFabric ? 'Fabric' : 'Style'}.png');
     UploadTask uploadTask = firebaseStorageRef.putFile(_imageFile);
     TaskSnapshot taskSnapshot = await uploadTask;
     taskSnapshot.ref.getDownloadURL().then(
@@ -1328,5 +1756,11 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
     ).catchError((onError) {
       ProgressDialog.dismissDialog(context);
     });
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty('snapshots', snapshots));
   }
 }

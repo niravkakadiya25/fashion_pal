@@ -24,7 +24,7 @@ Future <void> main() async {
         title: "FashionPal",
         home: SplashScreen(),
         routes:routes,
-        theme: ThemeData(
+          theme: ThemeData(
             scaffoldBackgroundColor: Colors.white,
             appBarTheme: const AppBarTheme(
               color: appTheme,

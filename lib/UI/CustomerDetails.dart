@@ -1,3 +1,4 @@
+import 'package:fashionpal/SplashScreen.dart';
 import 'package:fashionpal/UI/AddCustomers.dart';
 import 'package:fashionpal/colors.dart';
 import 'package:flutter/cupertino.dart';
@@ -96,30 +97,58 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                       ),
                     ),
                     Expanded(
-                      child: Container(
-                        alignment: Alignment.centerRight,
-                        padding: EdgeInsets.only(right: 20),
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                BouncyPageRoute(
-                                    widget: AddCustomer(
-                                  isEdit: true,
-                                  documentFields: widget.documentFields!,
-                                  customerId: widget.customerId,
-                                )));
-                          },
-                          child: Container(
-                            child: Image.asset(
-                              "images/ic_edit.png",
-                              color: Colors.white,
-                              height: 20,
-                              width: 20,
+                      child: isStaffUser
+                          ? (permissionList[0].isGranted ?? false)
+                              ? Container(
+                                  alignment: Alignment.centerRight,
+                                  padding: EdgeInsets.only(right: 20),
+                                  child: InkWell(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          BouncyPageRoute(
+                                              widget: AddCustomer(
+                                            isEdit: true,
+                                            documentFields:
+                                                widget.documentFields!,
+                                            customerId: widget.customerId,
+                                          )));
+                                    },
+                                    child: Container(
+                                      child: Image.asset(
+                                        "images/ic_edit.png",
+                                        color: Colors.white,
+                                        height: 20,
+                                        width: 20,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : Container()
+                          : Container(
+                              alignment: Alignment.centerRight,
+                              padding: EdgeInsets.only(right: 20),
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      BouncyPageRoute(
+                                          widget: AddCustomer(
+                                        isEdit: true,
+                                        documentFields: widget.documentFields!,
+                                        customerId: widget.customerId,
+                                      )));
+                                },
+                                child: Container(
+                                  child: Image.asset(
+                                    "images/ic_edit.png",
+                                    color: Colors.white,
+                                    height: 20,
+                                    width: 20,
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                      ),
                     )
                   ],
                 ),
@@ -209,13 +238,42 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                           Expanded(
                             child: Container(
                               padding: EdgeInsets.only(left: 10),
-                              child: Text(
-                                widget.documentFields!["phoneNumber"],
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold),
-                              ),
+                              child: isStaffUser
+                                  ? (permissionList[0].isGranted ?? false)
+                                      ? Container(
+                                          alignment: Alignment.centerRight,
+                                          padding: EdgeInsets.only(right: 20),
+                                          child: InkWell(
+                                            onTap: () {
+                                              Navigator.push(
+                                                  context,
+                                                  BouncyPageRoute(
+                                                      widget: AddCustomer(
+                                                    isEdit: true,
+                                                    documentFields:
+                                                        widget.documentFields!,
+                                                    customerId:
+                                                        widget.customerId,
+                                                  )));
+                                            },
+                                            child: Container(
+                                              child: Image.asset(
+                                                "images/ic_edit.png",
+                                                color: Colors.white,
+                                                height: 20,
+                                                width: 20,
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      : Container()
+                                  : Text(
+                                      widget.documentFields!["phoneNumber"],
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    ),
                             ),
                           )
                         ],

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:fashionpal/UI/ForgotPasswordScreen.dart';
 import 'package:fashionpal/UI/HomeScreen.dart';
@@ -11,6 +12,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../BouncyPageRoute.dart';
+import '../SplashScreen.dart';
 import '../colors.dart';
 import '../main.dart';
 
@@ -396,15 +398,33 @@ class _LoginPageState extends State<LoginPage> {
         .signInWithEmailAndPassword(
             email: '+233' + _email.substring(1) + "@fashionpal.com",
             password: _password)
-        .then((value) {
+        .then((value) async {
       ProgressDialog.dismissDialog(context);
       if (value != null) {
         if (value.additionalUserInfo != null) {
           setLoginStatus();
-          setOwnerId(value.user!.uid.toString());
-          setUserName(value.user!.displayName.toString());
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(value.user?.uid)
+              .get()
+              .then((docs) async {
+            print(docs);
+            if (docs.exists) {
+              setUserId(docs.id);
+              if ((docs.data() as Map)['role'] == 'staff') {
+                isStaffUser = true;
+                await setOwnerId((docs.data() as Map)['ownerId']);
+              } else if ((docs.data() as Map)['role'] == 'owner') {
+                await setOwnerId(docs.id);
+              }
+            }
+          }).then((value) {
+            Future.delayed(Duration(seconds: 1), () {
+              Navigator.pushNamedAndRemoveUntil(
+                  context, '/homepage', (Route<dynamic> route) => false);
+            });
+          });
 
-          print(value);
           // print(value.user.toString());
           // Flushbar(
           //   message: value.user!.uid.toString(),
@@ -412,10 +432,6 @@ class _LoginPageState extends State<LoginPage> {
           //   borderRadius: 8,
           //   duration: Duration(seconds: 2),
           // )..show(context);
-          Future.delayed(Duration(seconds: 1), () {
-            Navigator.pushNamedAndRemoveUntil(
-                context, '/homepage', (Route<dynamic> route) => false);
-          });
 
           // setUserToken(value.token);
           // setUserImage(value.data.image);
@@ -443,7 +459,7 @@ class _LoginPageState extends State<LoginPage> {
     }).catchError((onError) {
       print(onError);
       ProgressDialog.dismissDialog(context);
-      buildErrorDialog(context, 'title', onError.toString(),(){
+      buildErrorDialog(context, 'title', onError.toString(), () {
         Navigator.pop(context);
       });
     });

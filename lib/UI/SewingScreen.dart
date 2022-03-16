@@ -59,24 +59,24 @@ class _SewingScreenState extends State<SewingScreen> {
                     SewingItem(snapshot.data?.docs[index]),
               );
             }),
-        Align(
-          alignment: Alignment.bottomRight,
-          child: Container(
-              height: 100,
-              width: 200,
-              child: InkWell(
-                onTap: () {
-                  Navigator.push(
-                      context, new BouncyPageRoute(widget: AddSewingNewScreen()));
-                },
-                child: Container(
-                    padding: EdgeInsets.only(top: 10, right: 10),
-                    alignment: Alignment.bottomRight,
-                    child: Align(
-                        alignment: Alignment.bottomRight,
-                        child: getImageAssets())),
-              )),
-        )
+        // Align(
+        //   alignment: Alignment.bottomRight,
+        //   child: Container(
+        //       height: 100,
+        //       width: 200,
+        //       child: InkWell(
+        //         onTap: () async {
+        //           await Navigator.push(
+        //               context, new BouncyPageRoute(widget: AddSewingNewScreen()));
+        //         },
+        //         child: Container(
+        //             padding: EdgeInsets.only(top: 10, right: 10),
+        //             alignment: Alignment.bottomRight,
+        //             child: Align(
+        //                 alignment: Alignment.bottomRight,
+        //                 child: getImageAssets())),
+        //       )),
+        // )
 
       ],
     );

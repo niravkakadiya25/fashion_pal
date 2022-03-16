@@ -13,6 +13,8 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 TextEditingController forgotmobilenumber = TextEditingController();
+TextEditingController newpassword = TextEditingController();
+TextEditingController confirmnewpassword = TextEditingController();
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final formKey = GlobalKey<FormState>();
@@ -21,8 +23,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   late String _password;
   late String _token;
 
-  TextEditingController newpassword = TextEditingController();
-  TextEditingController confirmnewpassword = TextEditingController();
 
   // GoogleSignInAccount _userData;
   // GoogleSignIn _googleSignIn = GoogleSignIn();

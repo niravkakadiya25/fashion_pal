@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:contacts_service/contacts_service.dart';
+import 'package:csc_picker/csc_picker.dart';
 import 'package:dropdown_search/dropdown_search.dart';
+import 'package:fashionpal/UI/SignUpScreen.dart';
 import 'package:fashionpal/Utils/ProgressDialog.dart';
 import 'package:fashionpal/Utils/constants.dart';
 import 'package:fashionpal/Utils/sharPreference.dart';
@@ -9,6 +12,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../main.dart';
 
@@ -45,7 +49,7 @@ class _AddCustomerState extends State<AddCustomer> {
     final DateTime? picked = await showDatePicker(
         context: context,
         initialDate: selectedDOBDate,
-        firstDate: DateTime(2015, 8),
+        firstDate: DateTime(1947, 8),
         lastDate: DateTime(2101));
     if (picked != null && picked != selectedDOBDate)
       setState(() {
@@ -53,9 +57,51 @@ class _AddCustomerState extends State<AddCustomer> {
         DOB.text = formatter.format(selectedDOBDate).toString();
       });
   }
+  Future<void> _askPermissions(String? routeName) async {
+    PermissionStatus permissionStatus = await _getContactPermission();
+    if (permissionStatus == PermissionStatus.granted) {
 
+    } else {
+      _handleInvalidPermissions(permissionStatus);
+    }
+  }
+  Future<PermissionStatus> _getContactPermission() async {
+    PermissionStatus permission = await Permission.contacts.status;
+    if (permission != PermissionStatus.granted &&
+        permission != PermissionStatus.permanentlyDenied) {
+      PermissionStatus permissionStatus = await Permission.contacts.request();
+      return permissionStatus;
+    } else {
+      return permission;
+    }
+  }
+  Future<void> _pickContact() async {
+    try {
+      final Contact? contact = await ContactsService.openDeviceContactPicker();
+      if(contact != null) {
+        fname.text = contact.givenName ?? '';
+        telnumber.text = contact.phones?.first.value ?? '';
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+
+  void _handleInvalidPermissions(PermissionStatus permissionStatus) {
+    if (permissionStatus == PermissionStatus.denied) {
+      final snackBar = SnackBar(content: Text('Access to contact data denied'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } else if (permissionStatus == PermissionStatus.permanentlyDenied) {
+      final snackBar =
+      SnackBar(content: Text('Contact data not available on device'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
   @override
   void initState() {
+    _askPermissions(null);
+
     super.initState();
     if (widget.isEdit) {
       fname = TextEditingController(text: widget.documentFields!["firstName"]);
@@ -128,29 +174,34 @@ class _AddCustomerState extends State<AddCustomer> {
                       ),
                     ),
                     Expanded(
-                      child: Container(
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.only(right: 10),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              child: Image.asset(
-                                "images/shop.png",
-                                height: 20,
-                                width: 20,
+                      child: GestureDetector(
+                        onTap: () {
+                          _pickContact();
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          padding: EdgeInsets.only(right: 10),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                child: Image.asset(
+                                  "images/shop.png",
+                                  height: 20,
+                                  width: 20,
+                                ),
                               ),
-                            ),
-                            Container(
-                              child: Text(
-                                "Load from contact",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.normal),
+                              Container(
+                                child: Text(
+                                  "Load from contact",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.normal),
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     )
@@ -294,41 +345,31 @@ class _AddCustomerState extends State<AddCustomer> {
                         ),
                       ),
                     ),
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      margin: EdgeInsets.only(top: 10),
-                      height: 50,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Container(
-                              child: TextField(
-                                controller: country,
-                                decoration: InputDecoration(
-                                  focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.red),
-                                  ),
-                                  hintText: "Country",
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Container(
-                              padding: EdgeInsets.only(left: 10),
-                              child: TextField(
-                                controller: region,
-                                decoration: InputDecoration(
-                                  focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.red),
-                                  ),
-                                  hintText: "Region",
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
+                    CSCPicker(
+                      stateDropdownLabel: region.text.isEmpty
+                          ? 'State'
+                          : region.text,
+                      countryDropdownLabel: country.text.isEmpty
+                          ? 'Country'
+                          : country.text,
+                      onCountryChanged: (value) {
+                        setState(() {
+                          // countryValue = value;
+                          country.text = value;
+                        });
+                      },
+                      onStateChanged: (value) {
+                        setState(() {
+                          region.text = value.toString();
+                          // stateValue = value;
+                        });
+                      },
+                      onCityChanged: (value) {
+                        setState(() {
+                          city.text = value.toString();
+                          // cityValue = value;
+                        });
+                      },
                     ),
                     Container(
                       width: MediaQuery.of(context).size.width,
@@ -336,19 +377,7 @@ class _AddCustomerState extends State<AddCustomer> {
                       height: 50,
                       child: Row(
                         children: [
-                          Expanded(
-                            child: Container(
-                              child: TextField(
-                                controller: city,
-                                decoration: InputDecoration(
-                                  focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.red),
-                                  ),
-                                  hintText: "City",
-                                ),
-                              ),
-                            ),
-                          ),
+
                           Expanded(
                             child: GestureDetector(
                               onTap: () async {

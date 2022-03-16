@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:csc_picker/csc_picker.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:fashionpal/Utils/ProgressDialog.dart';
+import 'package:fashionpal/Utils/sharPreference.dart';
 import 'package:fashionpal/colors.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
@@ -24,6 +26,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   DateTime selectedDate = DateTime.now();
   String? date;
   TextEditingController _dateController = TextEditingController();
+  TextEditingController _companyNameController = TextEditingController();
 
   TextEditingController _fNameController = TextEditingController();
   TextEditingController _lastNameController = TextEditingController();
@@ -31,6 +34,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   TextEditingController _phoneNumberController = TextEditingController();
   TextEditingController _addressController = TextEditingController();
   TextEditingController _cityController = TextEditingController();
+  TextEditingController _countryController = TextEditingController();
+  TextEditingController _stateController = TextEditingController();
 
   @override
   void initState() {
@@ -46,6 +51,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         (widget.documentSnapshot?.data() as Map)['address'] ?? '';
     _cityController.text =
         (widget.documentSnapshot?.data() as Map)['city'] ?? '';
+    _companyNameController.text =
+        (widget.documentSnapshot?.data() as Map)['companyName'] ?? '';
     super.initState();
   }
 
@@ -131,6 +138,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                   ),
                 ),
+                Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Container(
+                      height: 50,
+                      child: Container(
+                        margin: EdgeInsets.only(top: 15),
+                        child: TextFormField(
+                          controller: _companyNameController,
+                          keyboardType: TextInputType.text,
+                          decoration: InputDecoration(
+                              filled: true,
+                              hintStyle: new TextStyle(color: Colors.grey),
+                              hintText: "Company Name",
+                              fillColor: Colors.white),
+                        ),
+                      ),
+                    )),
                 Padding(
                   padding: const EdgeInsets.only(top: 10),
                   child: Row(
@@ -263,53 +287,32 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 10),
-                  child: Container(
-                    margin: EdgeInsets.only(top: 15),
-                    child: DropdownSearch<String>(
-                      mode: Mode.MENU,
-                      showSelectedItem: false,
-                      items: ["Country1", "Country2", "Country3"],
-                      label: "Select Country",
-                      hint: "Select",
-                      // validator: (val) =>
-                      // val == null? _snackbar("Select Height Unit") : null,
-                      // onSaved: (newValue) {
-                      //   _heightUnit=newValue;
-                      // },
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: Container(
-                    margin: EdgeInsets.only(top: 15),
-                    child: DropdownSearch<String>(
-                      mode: Mode.MENU,
-                      showSelectedItem: false,
-                      items: ["State1", "State2", "State3"],
-                      label: "Select State",
-                      hint: "Select",
-                      // validator: (val) =>
-                      // val == null? _snackbar("Select Height Unit") : null,
-                      // onSaved: (newValue) {
-                      //   _heightUnit=newValue;
-                      // },
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: Container(
-                    margin: EdgeInsets.only(top: 15),
-                    child: TextFormField(
-                      controller: _cityController,
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                          filled: true,
-                          hintStyle: new TextStyle(color: Colors.grey),
-                          hintText: "City",
-                          fillColor: Colors.white),
-                    ),
+                  child: CSCPicker(
+                    stateDropdownLabel: _stateController.text.isEmpty
+                        ? 'State'
+                        : _stateController.text,
+                    countryDropdownLabel: _countryController.text.isEmpty
+                        ? 'Country'
+                        : _countryController.text,
+                    layout: Layout.vertical,
+                    onCountryChanged: (value) {
+                      setState(() {
+                        // countryValue = value;
+                        _countryController.text = value;
+                      });
+                    },
+                    onStateChanged: (value) {
+                      setState(() {
+                        _stateController.text = value.toString();
+                        // stateValue = value;
+                      });
+                    },
+                    onCityChanged: (value) {
+                      setState(() {
+                        _cityController.text = value.toString();
+                        // cityValue = value;
+                      });
+                    },
                   ),
                 ),
                 Padding(
@@ -338,6 +341,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           'phoneNumber': _phoneNumberController.text.trim(),
                           'address': _addressController.text.trim(),
                           'city': _cityController.text.trim(),
+                          'country': _countryController.text.trim(),
+                          'state': _stateController.text.trim(),
+                          'companyName': _companyNameController.text.trim(),
                           'updateAt': DateTime.now(),
                           'dateOfBirth': date ?? '',
                           'profileImage': profileUrl ?? '',
@@ -436,7 +442,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String? profileUrl;
 
   Future uploadImageToFirebase(BuildContext context, File _imageFile) async {
-    var firebaseStorageRef = FirebaseStorage.instance.ref().child('uploads');
+    var firebaseStorageRef = FirebaseStorage.instance.ref().child(
+        'uploads/${await getOwnerId()}_${DateTime.now().microsecondsSinceEpoch.toString()}.png');
+
     UploadTask uploadTask = firebaseStorageRef.putFile(_imageFile);
     TaskSnapshot taskSnapshot = await uploadTask;
     taskSnapshot.ref.getDownloadURL().then(

@@ -9,6 +9,8 @@
         <option name="modules">
           <set>
             <option value="$USER_HOME$/Downloads/FlutterSdks/flutter_2.8.1/.pub-cache/hosted/pub.dartlang.org/cloud_firestore-3.1.8/android" />
+            <option value="$USER_HOME$/Downloads/FlutterSdks/flutter_2.8.1/.pub-cache/hosted/pub.dartlang.org/cloud_functions-3.2.8/android" />
+            <option value="$USER_HOME$/Downloads/FlutterSdks/flutter_2.8.1/.pub-cache/hosted/pub.dartlang.org/contacts_service-0.6.3/android" />
             <option value="$USER_HOME$/Downloads/FlutterSdks/flutter_2.8.1/.pub-cache/hosted/pub.dartlang.org/firebase_auth-3.3.7/android" />
             <option value="$USER_HOME$/Downloads/FlutterSdks/flutter_2.8.1/.pub-cache/hosted/pub.dartlang.org/firebase_core-1.12.0/android" />
             <option value="$USER_HOME$/Downloads/FlutterSdks/flutter_2.8.1/.pub-cache/hosted/pub.dartlang.org/firebase_messaging-11.2.6/android" />
@@ -17,6 +19,7 @@
             <option value="$USER_HOME$/Downloads/FlutterSdks/flutter_2.8.1/.pub-cache/hosted/pub.dartlang.org/flutter_plugin_android_lifecycle-2.0.5/android" />
             <option value="$USER_HOME$/Downloads/FlutterSdks/flutter_2.8.1/.pub-cache/hosted/pub.dartlang.org/image_cropper-1.4.1/android" />
             <option value="$USER_HOME$/Downloads/FlutterSdks/flutter_2.8.1/.pub-cache/hosted/pub.dartlang.org/image_picker-0.8.4+9/android" />
+            <option value="$USER_HOME$/Downloads/FlutterSdks/flutter_2.8.1/.pub-cache/hosted/pub.dartlang.org/permission_handler_android-9.0.2+1/android" />
             <option value="$USER_HOME$/Downloads/FlutterSdks/flutter_2.8.1/.pub-cache/hosted/pub.dartlang.org/shared_preferences_android-2.0.10/android" />
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />

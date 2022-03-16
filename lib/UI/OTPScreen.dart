@@ -1,5 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fashionpal/UI/HomeScreen.dart';
+import 'package:fashionpal/Utils/constants.dart';
 import 'package:fashionpal/Utils/sent-otp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,9 +15,14 @@ import 'SignUpScreen.dart';
 
 class OTPScreen extends StatefulWidget {
   final bool isFromSignUp;
+  final bool isFromForgotPassword;
   final Map<String, dynamic>? map;
 
-  const OTPScreen({Key? key, this.isFromSignUp = false, this.map})
+  const OTPScreen(
+      {Key? key,
+      this.isFromSignUp = false,
+      this.map,
+      this.isFromForgotPassword = false})
       : super(key: key);
 
   @override
@@ -27,6 +33,7 @@ class _OTPScreen extends State<OTPScreen> {
   String otp_ = "";
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final formKey = GlobalKey<FormState>();
+  bool _obscureText = true;
 
   @override
   Widget build(BuildContext context) {
@@ -129,11 +136,43 @@ class _OTPScreen extends State<OTPScreen> {
                                   ),
                                   onPressed: () async {
                                     if (widget.isFromSignUp) {
-                                      bool isLogin =
-                                          await submitOTP(otp_, context,widget.map) ??
-                                              false;
-                                      if (isLogin) {
+                                      bool isLogin = await submitOTP(
+                                              otp_, context, widget.map) ??
+                                          false;
 
+                                      try {
+                                        HttpsCallable callable =
+                                            FirebaseFunctions.instance
+                                                .httpsCallable('addAdminRole');
+                                        print("phoneNumber: ${firebaseUser?.email}");
+                                        final resp = await callable
+                                            .call(<String, dynamic>{
+                                          'email': firebaseUser?.email,
+                                        });
+                                        print("result: ${resp.data}");
+                                      } on FirebaseFunctionsException catch (e) {
+                                        // Do clever things with e
+                                        print("result: ${e.stackTrace.toString()}");
+                                        print("result1: ${e.message.toString()}");
+
+                                      } catch (e) {
+                                        print("result: ${e.toString()}");
+                                        // Do other things that might be thrown that I have overlooked
+                                      }
+                                      if (isLogin) {
+                                        Navigator.push(
+                                            context,
+                                            BouncyPageRoute(
+                                                widget: HomePage()));
+                                      }
+                                    } else {
+                                      bool isLogin = await submitOTP(
+                                              otp_, context, widget.map,
+                                              isForgotPass: true,
+                                              password:
+                                                  newpassword.text.trim()) ??
+                                          false;
+                                      if (isLogin) {
                                         Navigator.push(
                                             context,
                                             BouncyPageRoute(

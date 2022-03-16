@@ -1,27 +1,66 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:fashionpal/UI/EditStaffScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../BouncyPageRoute.dart';
 import '../colors.dart';
+import 'AddStaff.dart';
 import 'EditCustomer.dart';
 
 class StaffDetailsScreen extends StatefulWidget {
+  final DocumentSnapshot? documentFields;
+  final String? staffId;
 
+  const StaffDetailsScreen({Key? key, this.documentFields, this.staffId})
+      : super(key: key);
 
   @override
   _StaffDetailsScreenState createState() => _StaffDetailsScreenState();
 }
 
-
 class _StaffDetailsScreenState extends State<StaffDetailsScreen> {
-
+  TextEditingController fname = TextEditingController();
+  TextEditingController surnamename = TextEditingController();
+  TextEditingController email = TextEditingController();
+  TextEditingController telnumber = TextEditingController();
+  TextEditingController DOB = TextEditingController();
+  TextEditingController sex = TextEditingController();
+  TextEditingController address = TextEditingController();
+  TextEditingController country = TextEditingController();
+  TextEditingController region = TextEditingController();
+  TextEditingController city = TextEditingController();
+  DateTime selectedDOBDate = DateTime.now();
+  final DateFormat formatter = DateFormat('yyyy-MM-dd');
+  CollectionReference users = FirebaseFirestore.instance.collection('staff');
 
   @override
   void initState() {
     super.initState();
-
-
+    fname = TextEditingController(
+        text: (widget.documentFields?.data() as Map)['staffData']["firstName"]);
+    surnamename = TextEditingController(
+        text: (widget.documentFields?.data() as Map)['staffData']["lastName"]);
+    email = TextEditingController(
+        text: (widget.documentFields?.data() as Map)['staffData']["email"]);
+    telnumber = TextEditingController(
+        text: (widget.documentFields?.data() as Map)['staffData']
+            ["phoneNumber"]);
+    // _controllerDOB = TextEditingController(text:  widget.documentFields!["birthday"].toString());
+    sex = TextEditingController(
+        text: (widget.documentFields?.data() as Map)['staffData']["sex"]);
+    address = TextEditingController(
+        text: (widget.documentFields?.data() as Map)['staffData']["address"]);
+    country = TextEditingController(
+        text: (widget.documentFields?.data() as Map)['staffData']["country"]);
+    region = TextEditingController(
+        text: (widget.documentFields?.data() as Map)['staffData']["firstName"]);
+    city = TextEditingController(
+        text: (widget.documentFields?.data() as Map)['staffData']["city"]);
+    DOB = TextEditingController(
+        text: (widget.documentFields?.data() as Map)['staffData']["birthday"]);
   }
 
   Future<void> getData() async {
@@ -42,27 +81,27 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen> {
         color: light_grey_theme,
         alignment: Alignment.center,
         child: Container(
-          margin: EdgeInsets.only(left: 20,right: 20),
-          height: 400,
+          margin: EdgeInsets.only(left: 20, right: 20),
+          height: 600,
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
-              color:Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(20))
-          ),
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(20))),
           child: Column(
             children: [
               Container(
                 width: MediaQuery.of(context).size.width,
                 height: 60,
                 decoration: BoxDecoration(
-                    color:Colors.blue,
-                    borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))
-                ),
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20))),
                 child: Row(
                   children: [
                     Expanded(
                       child: InkWell(
-                        onTap: (){
+                        onTap: () {
                           Navigator.pop(context);
                         },
                         child: Container(
@@ -72,7 +111,8 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen> {
                             "images/back.png",
                             color: Colors.white,
                             height: 30,
-                            width: 30,),
+                            width: 30,
+                          ),
                         ),
                       ),
                     ),
@@ -83,8 +123,7 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen> {
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 16,
-                              fontWeight: FontWeight.normal
-                          ),
+                              fontWeight: FontWeight.normal),
                         ),
                       ),
                     ),
@@ -93,13 +132,20 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen> {
                         alignment: Alignment.centerRight,
                         padding: EdgeInsets.only(right: 20),
                         child: InkWell(
-                          onTap: (){
-                            Navigator.push(context,
-                                BouncyPageRoute(widget: EditStaffScreen())
-                            );
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                new BouncyPageRoute(
+                                    widget: AddStaff(
+                                  isEdit: true,
+                                  documentFields: widget.documentFields,
+                                  staffId: (widget.documentFields?.data()
+                                      as Map)['staffId'],
+                                )));
                           },
                           child: Container(
-                            child: Image.asset("images/ic_edit.png",
+                            child: Image.asset(
+                              "images/ic_edit.png",
                               color: Colors.white,
                               height: 20,
                               width: 20,
@@ -109,353 +155,197 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen> {
                       ),
                     )
                   ],
-
                 ),
               ),
               Expanded(
-                  child:Container(
-                    width: MediaQuery.of(context).size.width,
-                    margin: EdgeInsets.only(left: 20,right: 20,top: 20),
-                    child: Column(
-                      children: [
-                        Text(
-                          "Opkum",
-                          style: TextStyle(
-                              color: Colors.blue,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(top: 10),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  child: Text(
-                                    "Role :",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.normal
-                                    ),
+                  child: Container(
+                width: MediaQuery.of(context).size.width,
+                margin: EdgeInsets.only(left: 20, right: 20, top: 20),
+                child: Column(
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      margin: EdgeInsets.only(top: 10),
+                      height: 50,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              child: TextField(
+                                controller: fname,
+                                decoration: InputDecoration(
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.red),
                                   ),
+                                  hintText: 'First Name',
                                 ),
                               ),
-                              Expanded(
-                                child: Container(
-                                  padding: EdgeInsets.only(left: 10),
-                                  child: Text(
-                                    "Apprentice",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold
-                                    ),
-                                  ),
-
-                                ),
-                              )
-
-                            ],
-
+                            ),
                           ),
-                        ),
-
-
-                        Container(
-                          margin: EdgeInsets.only(top: 10),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  child: Text(
-                                    "Contact :",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.normal
-                                    ),
+                          Expanded(
+                            child: Container(
+                              padding: EdgeInsets.only(left: 10),
+                              child: TextField(
+                                controller: surnamename,
+                                decoration: InputDecoration(
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.red),
                                   ),
+                                  hintText: 'Surname',
                                 ),
                               ),
-                              Expanded(
-                                child: Container(
-                                  padding: EdgeInsets.only(left: 10),
-                                  child: Text(
-                                    "0123456789",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold
-                                    ),
-                                  ),
-
-                                ),
-                              )
-
-                            ],
-
-                          ),
-                        ),
-
-
-                        Container(
-                          margin: EdgeInsets.only(top: 10),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  child: Text(
-                                    "Email :",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.normal
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  padding: EdgeInsets.only(left: 10),
-                                  child: Text(
-                                    "fashion@gmail.com",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold
-                                    ),
-                                  ),
-
-                                ),
-                              )
-
-                            ],
-
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(top: 10),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  child: Text(
-                                    "Gender :",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.normal
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  padding: EdgeInsets.only(left: 10),
-                                  child: Text(
-                                    "Male",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold
-                                    ),
-                                  ),
-
-                                ),
-                              )
-
-                            ],
-
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(top: 10),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  child: Text(
-                                    "Birthday :",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.normal
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  padding: EdgeInsets.only(left: 10),
-                                  child: Text(
-                                    "12 May 1984",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold
-                                    ),
-                                  ),
-
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(top: 10),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  child: Text(
-                                    "City :",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.normal
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  padding: EdgeInsets.only(left: 10),
-                                  child: Text(
-                                    "ghana",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold
-                                    ),
-                                  ),
-
-                                ),
-                              )
-
-                            ],
-
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(top: 10),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  child: Text(
-                                    "Stata :",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.normal
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  padding: EdgeInsets.only(left: 10),
-                                  child: Text(
-                                    "Ghana",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold
-                                    ),
-                                  ),
-
-                                ),
-                              )
-
-                            ],
-
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(top: 10),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  child: Text(
-                                    "Country :",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.normal
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  padding: EdgeInsets.only(left: 10),
-                                  child: Text(
-                                    "Ghana",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold
-                                    ),
-                                  ),
-
-                                ),
-                              )
-
-                            ],
-
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(top: 10),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  child: Text(
-                                    "Address :",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.normal
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  padding: EdgeInsets.only(left: 10),
-                                  child: Text(
-                                    "West",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold
-                                    ),
-                                  ),
-
-                                ),
-                              )
-
-                            ],
-
-                          ),
-                        ),
-
-
-
-                      ],
+                            ),
+                          )
+                        ],
+                      ),
                     ),
-                  )
-
-              )
+                    Container(
+                      height: 50,
+                      margin: EdgeInsets.only(top: 10),
+                      child: TextField(
+                        controller: email,
+                        decoration: InputDecoration(
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.red),
+                          ),
+                          hintText: "Email Address",
+                        ),
+                      ),
+                    ),
+                    Container(
+                      height: 50,
+                      margin: EdgeInsets.only(top: 10),
+                      child: TextField(
+                        controller: telnumber,
+                        keyboardType: TextInputType.phone,
+                        decoration: InputDecoration(
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.red),
+                          ),
+                          hintText: "Tel",
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      margin: EdgeInsets.only(top: 10),
+                      height: 50,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              child: TextField(
+                                controller: DOB,
+                                decoration: InputDecoration(
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.red),
+                                  ),
+                                  hintText: "Date Of Birth",
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              padding: EdgeInsets.only(left: 10),
+                              child: DropdownSearch<String>(
+                                mode: Mode.MENU,
+                                showSelectedItem: false,
+                                items: ["Male", "Female", "Other"],
+                                label: "Select Sex",
+                                hint: "Sex",
+                                selectedItem: sex.text,
+                                onChanged: (value) {
+                                  sex.text = value!;
+                                },
+                                // validator: (val) =>
+                                // val == null? _snackbar("Select Height Unit") : null,
+                                // onSaved: (newValue) {
+                                //   _heightUnit=newValue;
+                                // },
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    Container(
+                      height: 50,
+                      margin: EdgeInsets.only(top: 10),
+                      child: TextField(
+                        controller: address,
+                        decoration: InputDecoration(
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.red),
+                          ),
+                          hintText: "Complete Address",
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      margin: EdgeInsets.only(top: 10),
+                      height: 50,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              child: TextField(
+                                controller: country,
+                                decoration: InputDecoration(
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.red),
+                                  ),
+                                  hintText: "Country",
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              padding: EdgeInsets.only(left: 10),
+                              child: TextField(
+                                controller: region,
+                                decoration: InputDecoration(
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.red),
+                                  ),
+                                  hintText: "Region",
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      margin: EdgeInsets.only(top: 10),
+                      height: 50,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              child: TextField(
+                                decoration: InputDecoration(
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.red),
+                                  ),
+                                  hintText: "City",
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ))
             ],
           ),
         ),
       ),
-
     );
   }
 }

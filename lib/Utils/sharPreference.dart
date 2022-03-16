@@ -11,15 +11,15 @@ Future<bool> getLoginStatus() async {
   return userFound;
 }
 
-Future<bool> setUserId(int i) async {
+Future<bool> setUserId(String i) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   print("sp $i");
-  return await prefs.setInt("LoginID", i);
+  return await prefs.setString("LoginID", i);
 }
 
-Future<int> getUserId() async {
+Future<dynamic> getUserId() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.getInt("LoginID") ?? -1;
+  return prefs.get("LoginID");
 }
 
 Future<bool> setOwnerId(String id) async {

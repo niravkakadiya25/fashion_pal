@@ -1,10 +1,16 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fashionpal/UI/EditCompanyProfileScreen.dart';
 import 'package:fashionpal/UI/EditProfileScreen.dart';
+import 'package:fashionpal/Utils/ProgressDialog.dart';
 import 'package:fashionpal/Utils/sharPreference.dart';
 import 'package:fashionpal/colors.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../BouncyPageRoute.dart';
 
@@ -118,107 +124,6 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
             //     },
             //   ),
             // ),
-            Container(
-              padding:
-                  EdgeInsets.only(top: 30, bottom: 30, left: 40, right: 40),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: CircleAvatar(
-                      radius: 30,
-                      backgroundColor: white_theme,
-                      child: (documentSnapshot?.data()
-                                  as Map)['profileImage'] ==
-                              null
-                          ? getImageWidget()
-                          : (documentSnapshot?.data() as Map)['profileImage']
-                                  .toString()
-                                  .isNotEmpty
-                              ? Image.network((documentSnapshot?.data()
-                                      as Map)['profileImage']
-                                  .toString())
-                              : getImageWidget(),
-                    ),
-                  ),
-                  Divider(
-                    thickness: 2,
-                    color: appTheme,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 3),
-                          child: Text(
-                            "Email",
-                            style: TextStyle(
-                                color: appTheme,
-                                fontSize: 14,
-                                fontWeight: FontWeight.normal),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 3),
-                          child: Text(
-                            "Website",
-                            style: TextStyle(
-                                fontSize: 14,
-                                color: appTheme,
-                                fontWeight: FontWeight.normal),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 3),
-                          child: Text(
-                            "Contact",
-                            style: TextStyle(
-                                color: appTheme,
-                                fontSize: 14,
-                                fontWeight: FontWeight.normal),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 3),
-                          child: Text(
-                            "City",
-                            style: TextStyle(
-                                color: appTheme,
-                                fontSize: 14,
-                                fontWeight: FontWeight.normal),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 3),
-                          child: Text(
-                            "Region",
-                            style: TextStyle(
-                                fontSize: 14,
-                                color: appTheme,
-                                fontWeight: FontWeight.normal),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 3),
-                          child: Text(
-                            "Country",
-                            style: TextStyle(
-                                color: appTheme,
-                                fontSize: 14,
-                                fontWeight: FontWeight.normal),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
             // Divider(
             //   height: 1,
             //   color: Colors.grey,
@@ -254,7 +159,23 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                             child: CircleAvatar(
                               radius: 30,
                               backgroundColor: white_theme,
-                              child: getImageWidget(),
+                              child: GestureDetector(
+                                  onTap: () {
+                                    _showChoiceDialog(context);
+                                  },
+                                  child: (documentSnapshot?.data()
+                                              as Map)['profileImage'] ==
+                                          null
+                                      ? getImageWidget()
+                                      : (documentSnapshot?.data()
+                                                  as Map)['profileImage']
+                                              .toString()
+                                              .isNotEmpty
+                                          ? Image.network(
+                                              (documentSnapshot?.data()
+                                                      as Map)['profileImage']
+                                                  .toString())
+                                          : getImageWidget()),
                             ),
                           ),
                           Divider(
@@ -266,9 +187,9 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
+                              children: const [
                                 Padding(
-                                  padding: const EdgeInsets.only(bottom: 3),
+                                  padding: EdgeInsets.only(bottom: 3),
                                   child: Text(
                                     "Company Name",
                                     style: TextStyle(
@@ -278,7 +199,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                   ),
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.only(bottom: 3),
+                                  padding: EdgeInsets.only(bottom: 3),
                                   child: Text(
                                     "Address",
                                     style: TextStyle(
@@ -288,7 +209,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                   ),
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.only(bottom: 3),
+                                  padding: EdgeInsets.only(bottom: 3),
                                   child: Text(
                                     "Phone number",
                                     style: TextStyle(
@@ -309,7 +230,8 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                 Padding(
                                   padding: const EdgeInsets.only(bottom: 3),
                                   child: Text(
-                                    "Lorem Ipsum",
+                                    (documentSnapshot?.data() as Map)['companyName']
+                                        .toString(),
                                     style: TextStyle(
                                         color: Colors.black,
                                         fontSize: 14,
@@ -319,7 +241,8 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                 Padding(
                                   padding: const EdgeInsets.only(bottom: 3),
                                   child: Text(
-                                    "Lorem Ipsum",
+                                    (documentSnapshot?.data() as Map)['address']
+                                        .toString(),
                                     style: TextStyle(
                                         color: Colors.black,
                                         fontSize: 14,
@@ -329,7 +252,9 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                 Padding(
                                   padding: const EdgeInsets.only(bottom: 3),
                                   child: Text(
-                                    "Lorem Ipsum ",
+                                    (documentSnapshot?.data()
+                                            as Map)['phoneNumber']
+                                        .toString(),
                                     style: TextStyle(
                                         color: Colors.black,
                                         fontSize: 14,
@@ -581,31 +506,31 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                               ),
                             ),
                           ),
-                          Container(
-                            margin: EdgeInsets.only(top: 20, left: 10),
-                            height: 40,
-                            child: RaisedButton(
-                              child: Center(
-                                child: Text(
-                                  "Update Company",
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    BouncyPageRoute(
-                                        widget: EditCompanyProfileScreen()));
-                              },
-                              color: appTheme,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                              ),
-                            ),
-                          ),
+                          // Container(
+                          //   margin: EdgeInsets.only(top: 20, left: 10),
+                          //   height: 40,
+                          //   child: RaisedButton(
+                          //     child: Center(
+                          //       child: Text(
+                          //         "Update Company",
+                          //         style: TextStyle(
+                          //             fontSize: 14,
+                          //             color: Colors.white,
+                          //             fontWeight: FontWeight.bold),
+                          //       ),
+                          //     ),
+                          //     onPressed: () {
+                          //       Navigator.push(
+                          //           context,
+                          //           BouncyPageRoute(
+                          //               widget: EditCompanyProfileScreen()));
+                          //     },
+                          //     color: appTheme,
+                          //     shape: RoundedRectangleBorder(
+                          //       borderRadius: BorderRadius.circular(30.0),
+                          //     ),
+                          //   ),
+                          // ),
                         ],
                       )
                     ]),
@@ -615,6 +540,104 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _showChoiceDialog(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (BuildContext contexts) {
+          return AlertDialog(
+            title: Text(
+              "Choose option",
+              style: TextStyle(color: Colors.blue),
+            ),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: [
+                  Divider(
+                    height: 1,
+                    color: Colors.blue,
+                  ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.pop(context);
+                      _openGallery(context);
+                    },
+                    title: Text("Gallery"),
+                    leading: Icon(
+                      Icons.account_box,
+                      color: Colors.blue,
+                    ),
+                  ),
+                  Divider(
+                    height: 1,
+                    color: Colors.blue,
+                  ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.pop(context);
+
+                      _openCamera(context);
+                    },
+                    title: Text("Camera"),
+                    leading: Icon(
+                      Icons.camera,
+                      color: Colors.blue,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+  PickedFile? imageFile = null;
+
+  void _openGallery(BuildContext context) async {
+    final pickedFile = await ImagePicker().getImage(
+      source: ImageSource.gallery,
+    );
+    setState(() {
+      imageFile = pickedFile!;
+    });
+    if (imageFile != null) {
+      ProgressDialog.showLoaderDialog(context);
+      uploadImageToFirebase(context, File(imageFile!.path));
+    }
+  }
+
+  void _openCamera(BuildContext context) async {
+    final pickedFile = await ImagePicker().getImage(
+      source: ImageSource.camera,
+    );
+    setState(() {
+      imageFile = pickedFile!;
+    });
+    if (imageFile != null) {
+      ProgressDialog.showLoaderDialog(context);
+      uploadImageToFirebase(context, File(imageFile!.path));
+    }
+  }
+
+  String? logoUrl;
+
+  Future uploadImageToFirebase(BuildContext context, File _imageFile) async {
+    var firebaseStorageRef = FirebaseStorage.instance.ref().child(
+        'uploads/${await getOwnerId()}_${DateTime.now().microsecondsSinceEpoch.toString()}.png');
+    UploadTask uploadTask = firebaseStorageRef.putFile(_imageFile);
+    TaskSnapshot taskSnapshot = await uploadTask;
+    taskSnapshot.ref.getDownloadURL().then(
+      (value) {
+        logoUrl = value;
+        if (kDebugMode) {
+          print("Done: $value");
+        }
+        ProgressDialog.dismissDialog(context);
+      },
+    ).catchError((onError) {
+      ProgressDialog.dismissDialog(context);
+    });
   }
 
   Widget getImageWidget() {

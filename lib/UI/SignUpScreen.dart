@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:csc_picker/csc_picker.dart';
 import 'package:fashionpal/Utils/ProgressDialog.dart';
 import 'package:fashionpal/Utils/sent-otp.dart';
+import 'package:fashionpal/Utils/sharPreference.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
@@ -36,7 +38,9 @@ class _SignUpScreen extends State<SignUpScreen> {
   TextEditingController address = TextEditingController();
   TextEditingController logo = TextEditingController();
   TextEditingController confirmPassword = TextEditingController();
-
+  TextEditingController country = TextEditingController();
+  TextEditingController region = TextEditingController();
+  TextEditingController city = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -410,6 +414,33 @@ class _SignUpScreen extends State<SignUpScreen> {
                               hintText: "Upload Logo",
                               fillColor: appTheme),
                         ),
+                        CSCPicker(
+                          stateDropdownLabel: region.text.isEmpty
+                              ? 'State'
+                              : region.text,
+                          countryDropdownLabel: country.text.isEmpty
+                              ? 'Country'
+                              : country.text,
+                          onCountryChanged: (value) {
+                            setState(() {
+                              // countryValue = value;
+                              country.text = value;
+                            });
+                          },
+                          onStateChanged: (value) {
+                            setState(() {
+                              region.text = value.toString();
+                              // stateValue = value;
+                            });
+                          },
+                          onCityChanged: (value) {
+                            setState(() {
+                              city.text = value.toString();
+                              // cityValue = value;
+                            });
+                          },
+                        ),
+
                         Container(
                             margin: EdgeInsets.only(top: 20, left: 20),
                             padding: EdgeInsets.all(10.0),
@@ -435,14 +466,19 @@ class _SignUpScreen extends State<SignUpScreen> {
                                         'logo': logoUrl,
                                         'isEnabled': true,
                                         'role': 'owner',
-                                        'customersCount':0,
+                                        'customersCount': 0,
                                         'searchMatch':
-                                            companyName.text.toString(),
+                                            companyName.text.toString().replaceAll(' ', '').toLowerCase().toString(),
                                         'createdAt': DateTime.now(),
-                                        'profileImage':'',
-                                        'sewingsCount':0,
-                                        'totalExpenditure':0,
-                                        'totalIncome':0,
+                                        'profileImage': '',
+                                        'sewingsCount': 0,
+                                        'totalExpenditure': 0,
+                                        'staffCount': 0,
+                                        'totalIncome': 0,
+                                        'senderId': 'fashionspal',
+                                        'city': city.text.trim(),
+                                        'country': country.text.trim(),
+                                        'state': region.text.trim(),
                                       });
                                   // Navigator.of(context).pop(true);
                                 })),
@@ -534,10 +570,11 @@ class _SignUpScreen extends State<SignUpScreen> {
     }
   }
 
-  String? logoUrl;
+  String? logoUrl= '';
 
   Future uploadImageToFirebase(BuildContext context, File _imageFile) async {
-    var firebaseStorageRef = FirebaseStorage.instance.ref().child('uploads');
+    var firebaseStorageRef = FirebaseStorage.instance.ref().child(
+        'uploads/${await getOwnerId()}_${DateTime.now().microsecondsSinceEpoch.toString()}.png');
     UploadTask uploadTask = firebaseStorageRef.putFile(_imageFile);
     TaskSnapshot taskSnapshot = await uploadTask;
     taskSnapshot.ref.getDownloadURL().then(
