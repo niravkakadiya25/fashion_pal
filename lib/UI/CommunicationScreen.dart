@@ -25,6 +25,52 @@ class _CommunicationScreen extends State<CommunicationScreen> {
     return SafeArea(
         child:Scaffold(
             key: scaffoldKey,
+            appBar: PreferredSize(
+              preferredSize: Size.fromHeight(50.0),
+              child: AppBar(
+                automaticallyImplyLeading: false,
+                leading: Padding(
+                  padding: const EdgeInsets.only(left: 20),
+                  child: InkWell(
+                    child: Icon(
+                      Icons.arrow_back,
+                      color: Colors.white,
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      // Navigator.push(context,
+                      //     MaterialPageRoute(builder: (context)=>EditMyProfile())
+                      // );
+                    },
+                  ),
+                ),
+                centerTitle: true,
+                title: Text(
+                  "Communication",
+                  style: TextStyle(
+                      fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
+                ),
+                backgroundColor: appTheme,
+                // actions: <Widget>[
+                //   Builder(
+                //     builder: (context){
+                //       return Padding(
+                //         padding: const EdgeInsets.only(right: 20),
+                //         child: InkWell(
+                //           child: Icon(Icons.edit,
+                //             color: Colors.white,),
+                //           onTap:() {
+                //             // Navigator.push(context,
+                //             //     MaterialPageRoute(builder: (context)=>EditMyProfile())
+                //             // );
+                //           },
+                //         ),
+                //       );
+                //     },
+                //   )
+                // ],
+              ),
+            ),
             body:SingleChildScrollView(
               child: Container(
                   child:Column(
@@ -35,19 +81,7 @@ class _CommunicationScreen extends State<CommunicationScreen> {
                           key: formKey,
                           child: Column(
                             children: [
-                              Container(
-                                  margin: const EdgeInsets.only(top: 10),
-                                  child: InkWell(
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: getImageMail(),
-                                    ),
-                                    onTap: (){
-                                      Navigator.push(context,
-                                          BouncyPageRoute(widget: SendMailScreen()));
-                                    },
-                                  )
-                              ),
+
                               Container(
                                   margin: const EdgeInsets.only(top: 10),
                                   child: InkWell(

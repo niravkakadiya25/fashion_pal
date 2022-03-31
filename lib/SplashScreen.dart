@@ -48,8 +48,12 @@ class _SplashScreen extends State<SplashScreen> {
           }
         }
       });
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => HomePage()));
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomePage(),
+          ),
+              (route) => false);
     } else {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => LoginPage()));

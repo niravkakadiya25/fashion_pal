@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>735887246149-nsu5b38psfs02tp77mbtib8dlu1hkt3g.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.735887246149-nsu5b38psfs02tp77mbtib8dlu1hkt3g</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>735887246149-2vst0jjjnir2mjipgn9hv0d8fbhl4eua.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyC9brGNbvoD_Y8MTXK9agMPJ4sq5FIMsUI</string>
+	<key>GCM_SENDER_ID</key>
+	<string>735887246149</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.fashionpal.com</string>
+	<key>PROJECT_ID</key>
+	<string>fashionsgh-84af1</string>
+	<key>STORAGE_BUCKET</key>
+	<string>fashionsgh-84af1.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:735887246149:ios:f50303b5a3c7393d5c742c</string>
+	<key>DATABASE_URL</key>
+	<string>https://fashionsgh-84af1-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>

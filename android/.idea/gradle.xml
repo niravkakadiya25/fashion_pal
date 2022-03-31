@@ -17,10 +17,12 @@
             <option value="$USER_HOME$/Downloads/FlutterSdks/flutter_2.8.1/.pub-cache/hosted/pub.dartlang.org/firebase_storage-10.2.7/android" />
             <option value="$USER_HOME$/Downloads/FlutterSdks/flutter_2.8.1/.pub-cache/hosted/pub.dartlang.org/flutter_local_notifications-8.2.0/android" />
             <option value="$USER_HOME$/Downloads/FlutterSdks/flutter_2.8.1/.pub-cache/hosted/pub.dartlang.org/flutter_plugin_android_lifecycle-2.0.5/android" />
+            <option value="$USER_HOME$/Downloads/FlutterSdks/flutter_2.8.1/.pub-cache/hosted/pub.dartlang.org/flutter_sms-2.3.2/android" />
             <option value="$USER_HOME$/Downloads/FlutterSdks/flutter_2.8.1/.pub-cache/hosted/pub.dartlang.org/image_cropper-1.4.1/android" />
             <option value="$USER_HOME$/Downloads/FlutterSdks/flutter_2.8.1/.pub-cache/hosted/pub.dartlang.org/image_picker-0.8.4+9/android" />
             <option value="$USER_HOME$/Downloads/FlutterSdks/flutter_2.8.1/.pub-cache/hosted/pub.dartlang.org/permission_handler_android-9.0.2+1/android" />
             <option value="$USER_HOME$/Downloads/FlutterSdks/flutter_2.8.1/.pub-cache/hosted/pub.dartlang.org/shared_preferences_android-2.0.10/android" />
+            <option value="$USER_HOME$/Downloads/FlutterSdks/flutter_2.8.1/.pub-cache/hosted/pub.dartlang.org/url_launcher_android-6.0.15/android" />
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
           </set>

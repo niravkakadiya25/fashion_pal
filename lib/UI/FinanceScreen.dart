@@ -76,12 +76,15 @@ class _FinanceScreenState extends State<FinanceScreen> {
   List<QueryDocumentSnapshot> partialList = [];
   List<QueryDocumentSnapshot> noPaymentList = [];
   int noPaymentTotal = 0;
+  dynamic noPaymentAmount = 0;
+  dynamic partialPaymentAmount = 0;
   int partialPaymentTotal = 0;
 
   getSewingData() async {
     expenditures = 0;
     income = 0;
     invoice = 0;
+    partialPaymentAmount = 0;
     noPaymentTotal = 0;
     partialPaymentTotal = 0;
 
@@ -151,7 +154,8 @@ class _FinanceScreenState extends State<FinanceScreen> {
         if (element.exists) {
           if (element.data() != null) {
             if ((element.data() as Map)['sewingData'] != null) {
-              Timestamp timeStamp =(element.data() as Map)['sewingData']['createdAt'];
+              Timestamp timeStamp =
+                  (element.data() as Map)['sewingData']['createdAt'];
               if (startDate != null) {
                 if (startDate!.isAfter(DateTime.fromMicrosecondsSinceEpoch(
                     timeStamp.microsecondsSinceEpoch))) {
@@ -163,20 +167,36 @@ class _FinanceScreenState extends State<FinanceScreen> {
                           .toString()
                           .isNotEmpty) {
                         if (int.parse((element.data() as Map)['sewingData']
-                        ['amountPaid']
-                            .toString()) ==
+                                    ['amountPaid']
+                                .toString()) ==
                             0) {
-                          print('object1');
+                          noPaymentAmount = noPaymentAmount +
+                              ((element.data() as Map)['sewingData']['cost']
+                                  .toString());
                           noPaymentList.add(element);
                         } else {
-                          print('object');
-                          partialList.add(element);
+                          if ((((element.data() as Map)['sewingData']
+                                      ['amountPaid']
+                                  .toString())) !=
+                              ((element.data() as Map)['sewingData']['cost']
+                                  .toString())) {
+                            partialPaymentAmount = partialPaymentAmount +
+                                (int.parse((element.data() as Map)['sewingData']
+                                        ['amountPaid']
+                                    .toString()));
+                            partialList.add(element);
+                          }
                         }
                       } else {
-                        print('object4');
+                        noPaymentAmount = noPaymentAmount +
+                            ((element.data() as Map)['sewingData']['cost']
+                                .toString());
                         noPaymentList.add(element);
                       }
                     } else {
+                      noPaymentAmount = noPaymentAmount +
+                          ((element.data() as Map)['sewingData']['cost']
+                              .toString());
                       print('object2');
                       noPaymentList.add(element);
                     }
@@ -190,20 +210,37 @@ class _FinanceScreenState extends State<FinanceScreen> {
                       .toString()
                       .isNotEmpty) {
                     if (int.parse((element.data() as Map)['sewingData']
-                    ['amountPaid']
-                        .toString()) ==
+                                ['amountPaid']
+                            .toString()) ==
                         0) {
                       print('object1');
+                      noPaymentAmount = noPaymentAmount +
+                          ((element.data() as Map)['sewingData']['cost']
+                              .toString());
                       noPaymentList.add(element);
                     } else {
-                      print('object');
-                      partialList.add(element);
+                      if ((((element.data() as Map)['sewingData']['amountPaid']
+                              .toString())) !=
+                          ((element.data() as Map)['sewingData']['cost']
+                              .toString())) {
+                        partialPaymentAmount = partialPaymentAmount +
+                            (int.parse((element.data() as Map)['sewingData']
+                                    ['amountPaid']
+                                .toString()));
+                        partialList.add(element);
+                      }
                     }
                   } else {
+                    noPaymentAmount = noPaymentAmount +
+                        ((element.data() as Map)['sewingData']['cost']
+                            .toString());
                     print('object4');
                     noPaymentList.add(element);
                   }
                 } else {
+                  noPaymentAmount = noPaymentAmount +
+                      ((element.data() as Map)['sewingData']['cost']
+                          .toString());
                   print('object2');
                   noPaymentList.add(element);
                 }
@@ -217,6 +254,9 @@ class _FinanceScreenState extends State<FinanceScreen> {
   }
 
   getTotal() {
+    for (var element in noPaymentList) {
+      noPaymentTotal = (element.data() as Map)[''];
+    }
     noPaymentTotal = noPaymentList.length;
     partialPaymentTotal = partialList.length;
   }
@@ -270,13 +310,31 @@ class _FinanceScreenState extends State<FinanceScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                margin: EdgeInsets.only(top: 10, right: 5),
-                height: 100,
-                child: Image.asset(
-                  "images/invoice.png",
-                  fit: BoxFit.fill,
-                ),
+              Stack(
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(top: 10, left: 5),
+                    height: 100,
+                    child: Image.asset(
+                      "images/income.png",
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                  Container(
+                    height: 100,
+                    width: 105,
+                    child: Center(
+                      child: Text(
+                        income.toString(),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               InkWell(
                 onTap: () async {
@@ -343,7 +401,7 @@ class _FinanceScreenState extends State<FinanceScreen> {
                       width: 105,
                       child: Center(
                         child: Text(
-                          partialPaymentTotal.toString(),
+                          partialPaymentAmount.toString(),
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               color: Colors.white,
@@ -381,7 +439,7 @@ class _FinanceScreenState extends State<FinanceScreen> {
                       width: 105,
                       child: Center(
                         child: Text(
-                          noPaymentTotal.toString(),
+                          noPaymentAmount.toString(),
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               color: Colors.white,
@@ -470,7 +528,7 @@ class _FinanceScreenState extends State<FinanceScreen> {
                       child: Align(
                     alignment: Alignment.bottomCenter,
                     child: InkWell(
-                        child: Text("Payment",
+                        child: Text("Income",
                             style:
                                 TextStyle(fontSize: 16, color: Colors.black)),
                         onTap: () {
@@ -611,7 +669,6 @@ class _FinanceScreenState extends State<FinanceScreen> {
 
 class SalesData {
   SalesData(this.year, this.sales);
-
   final String year;
   final double sales;
 }

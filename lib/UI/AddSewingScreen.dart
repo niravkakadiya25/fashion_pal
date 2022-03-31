@@ -81,7 +81,6 @@ class _AddSewingScreenState extends State<AddSewingScreen> {
                     margin: EdgeInsets.only(top: 15),
                     child: DropdownSearch<String>(
                       mode: Mode.MENU,
-                      showSelectedItem: false,
                       items: ["User1", "User2", "User3"],
                       label: "Select User",
                       hint: "Select",
@@ -131,7 +130,6 @@ class _AddSewingScreenState extends State<AddSewingScreen> {
                     margin: EdgeInsets.only(top: 15),
                     child: DropdownSearch<String>(
                       mode: Mode.MENU,
-                      showSelectedItem: false,
                       items: ["Staff1", "Staff2", "Staff3"],
                       label: "Select Staff",
                       hint: "Select",

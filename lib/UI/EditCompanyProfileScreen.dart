@@ -244,7 +244,6 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
                         margin: EdgeInsets.only(top: 15),
                         child: DropdownSearch<String>(
                           mode: Mode.MENU,
-                          showSelectedItem: false,
                           items: ["Sole","Group","Dummy"],
                           label: "Select",
                           hint: "Select",
@@ -261,7 +260,6 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
                         margin: EdgeInsets.only(top: 15),
                         child: DropdownSearch<String>(
                           mode: Mode.MENU,
-                          showSelectedItem: false,
                           items: ["Dollar","Rs.","Dinar"],
                           label: "Select",
                           hint: "Select",
@@ -296,7 +294,6 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
                     margin: EdgeInsets.only(top: 15),
                     child: DropdownSearch<String>(
                       mode: Mode.MENU,
-                      showSelectedItem: false,
                       items: ["Country1","Country2","Country3"],
                       label: "Select Country",
                       hint: "Select",
@@ -314,7 +311,6 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
                     margin: EdgeInsets.only(top: 15),
                     child: DropdownSearch<String>(
                       mode: Mode.MENU,
-                      showSelectedItem: false,
                       items: ["State1","State2","State3"],
                       label: "Select State",
                       hint: "Select",

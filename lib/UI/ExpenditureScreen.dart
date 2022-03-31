@@ -100,7 +100,6 @@ class _ExpenditureScreenState extends State<ExpenditureScreen> {
                 margin: EdgeInsets.only(top: 40),
                 child: DropdownSearch<dynamic>(
                   mode: Mode.MENU,
-                  showSelectedItem: false,
                   items: expenseCategories,
                   label: "Select Expenditure",
                   hint: "Select Type",
@@ -283,7 +282,6 @@ class _ExpenditureScreenState extends State<ExpenditureScreen> {
                                           margin: EdgeInsets.only(top: 40),
                                           child: DropdownSearch<dynamic>(
                                             mode: Mode.MENU,
-                                            showSelectedItem: false,
                                             items: expenseCategories,
                                             label: "Select Expenditure",
                                             hint: "Select Type",

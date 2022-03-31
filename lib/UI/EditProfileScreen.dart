@@ -255,7 +255,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           margin: EdgeInsets.only(top: 15),
                           child: DropdownSearch<String>(
                             mode: Mode.MENU,
-                            showSelectedItem: false,
                             items: ["Male", "Female ", "Other"],
                             label: "Select Gender",
                             hint: "Select",

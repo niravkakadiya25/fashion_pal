@@ -50,7 +50,6 @@ class _SendMailScreen extends State<SendMailScreen> {
                                 margin: EdgeInsets.only(top: 40),
                                 child: DropdownSearch<String>(
                                   mode: Mode.MENU,
-                                  showSelectedItem: false,
                                   items: ["All User","User1 ","User2"],
                                   label: "Select User",
                                   hint: "Select",

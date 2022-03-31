@@ -1,5 +1,6 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fashionpal/UI/HomeScreen.dart';
+import 'package:fashionpal/Utils/ProgressDialog.dart';
 import 'package:fashionpal/Utils/constants.dart';
 import 'package:fashionpal/Utils/sent-otp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -135,6 +136,7 @@ class _OTPScreen extends State<OTPScreen> {
                                     ),
                                   ),
                                   onPressed: () async {
+                                    ProgressDialog.showLoaderDialog(context);
                                     if (widget.isFromSignUp) {
                                       bool isLogin = await submitOTP(
                                               otp_, context, widget.map) ??
@@ -144,7 +146,8 @@ class _OTPScreen extends State<OTPScreen> {
                                         HttpsCallable callable =
                                             FirebaseFunctions.instance
                                                 .httpsCallable('addAdminRole');
-                                        print("phoneNumber: ${firebaseUser?.email}");
+                                        print(
+                                            "phoneNumber: ${firebaseUser?.email}");
                                         final resp = await callable
                                             .call(<String, dynamic>{
                                           'email': firebaseUser?.email,
@@ -152,18 +155,25 @@ class _OTPScreen extends State<OTPScreen> {
                                         print("result: ${resp.data}");
                                       } on FirebaseFunctionsException catch (e) {
                                         // Do clever things with e
-                                        print("result: ${e.stackTrace.toString()}");
-                                        print("result1: ${e.message.toString()}");
-
+                                        ProgressDialog.dismissDialog(context);
+                                        print(
+                                            "result: ${e.stackTrace.toString()}");
+                                        print(
+                                            "result1: ${e.message.toString()}");
                                       } catch (e) {
+                                        ProgressDialog.dismissDialog(context);
                                         print("result: ${e.toString()}");
                                         // Do other things that might be thrown that I have overlooked
                                       }
+                                      ProgressDialog.dismissDialog(context);
                                       if (isLogin) {
-                                        Navigator.push(
+                                        ProgressDialog.dismissDialog(context);
+                                        Navigator.pushAndRemoveUntil(
                                             context,
-                                            BouncyPageRoute(
-                                                widget: HomePage()));
+                                            MaterialPageRoute(
+                                              builder: (context) => HomePage(),
+                                            ),
+                                                (route) => false);
                                       }
                                     } else {
                                       bool isLogin = await submitOTP(
@@ -173,10 +183,15 @@ class _OTPScreen extends State<OTPScreen> {
                                                   newpassword.text.trim()) ??
                                           false;
                                       if (isLogin) {
-                                        Navigator.push(
+                                        ProgressDialog.dismissDialog(context);
+                                        Navigator.pushAndRemoveUntil(
                                             context,
-                                            BouncyPageRoute(
-                                                widget: HomePage()));
+                                            MaterialPageRoute(
+                                              builder: (context) => HomePage(),
+                                            ),
+                                            (route) => false);
+                                      } else {
+                                        ProgressDialog.dismissDialog(context);
                                       }
                                     }
                                     //

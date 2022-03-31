@@ -12,6 +12,7 @@ import 'package:flutter/services.dart';
 
 import '../BouncyPageRoute.dart';
 import '../main.dart';
+import 'ProgressDialog.dart';
 import 'constants.dart';
 
 String? _status;
@@ -55,6 +56,7 @@ submitPhoneNumber(
     _code = code!;
     print(code.toString());
     _status = 'Code Sent\n';
+    ProgressDialog.dismissDialog(context);
 
     Navigator.push(
         context,

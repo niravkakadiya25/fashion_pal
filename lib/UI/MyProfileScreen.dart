@@ -42,37 +42,51 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-          preferredSize: Size.fromHeight(50.0),
-          child: AppBar(
-            automaticallyImplyLeading: false,
-            centerTitle: true,
-            title: Text(
-              "My Profile",
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
+        preferredSize: Size.fromHeight(50.0),
+        child: AppBar(
+          automaticallyImplyLeading: false,
+          leading: Padding(
+            padding: const EdgeInsets.only(left: 20),
+            child: InkWell(
+              child: Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                // Navigator.push(context,
+                //     MaterialPageRoute(builder: (context)=>EditMyProfile())
+                // );
+              },
             ),
-            backgroundColor: appTheme,
-            // actions: <Widget>[
-            //   Builder(
-            //     builder: (context){
-            //       return Padding(
-            //         padding: const EdgeInsets.only(right: 20),
-            //         child: InkWell(
-            //           child: Icon(Icons.edit,
-            //             color: Colors.white,),
-            //           onTap:() {
-            //             // Navigator.push(context,
-            //             //     MaterialPageRoute(builder: (context)=>EditMyProfile())
-            //             // );
-            //           },
-            //         ),
-            //       );
-            //     },
-            //   )
-            // ],
-          )),
+          ),
+          centerTitle: true,
+          title: Text(
+            "My Profile",
+            style: TextStyle(
+                fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          backgroundColor: appTheme,
+          // actions: <Widget>[
+          //   Builder(
+          //     builder: (context){
+          //       return Padding(
+          //         padding: const EdgeInsets.only(right: 20),
+          //         child: InkWell(
+          //           child: Icon(Icons.edit,
+          //             color: Colors.white,),
+          //           onTap:() {
+          //             // Navigator.push(context,
+          //             //     MaterialPageRoute(builder: (context)=>EditMyProfile())
+          //             // );
+          //           },
+          //         ),
+          //       );
+          //     },
+          //   )
+          // ],
+        ),
+      ),
       body: isLoading ? Container() : _build(context),
     );
   }
@@ -230,7 +244,8 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                 Padding(
                                   padding: const EdgeInsets.only(bottom: 3),
                                   child: Text(
-                                    (documentSnapshot?.data() as Map)['companyName']
+                                    (documentSnapshot?.data()
+                                            as Map)['companyName']
                                         .toString(),
                                     style: TextStyle(
                                         color: Colors.black,

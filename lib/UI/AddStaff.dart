@@ -335,7 +335,6 @@ class _AddStaffState extends State<AddStaff> {
                                 padding: EdgeInsets.only(left: 10),
                                 child: DropdownSearch<String>(
                                   mode: Mode.MENU,
-                                  showSelectedItem: false,
                                   items: ["Male", "Female", "Other"],
                                   label: "Select Sex",
                                   hint: "Sex",

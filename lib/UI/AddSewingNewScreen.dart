@@ -243,7 +243,6 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                               margin: EdgeInsets.only(top: 15),
                               child: DropdownSearch<QueryDocumentSnapshot>(
                                 mode: Mode.MENU,
-                                showSelectedItem: false,
                                 items: snapshot?.docs,
                                 label: "Select User",
                                 hint: "Select",
@@ -252,10 +251,10 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                     : true,
                                 selectedItem: selectedSnapshot,
                                 itemAsString: (item) {
-                                  return (item.data() as Map)['customerData']
+                                  return (item?.data() as Map)['customerData']
                                           ['firstName'] +
                                       ' ' +
-                                      (item.data() as Map)['customerData']
+                                      (item?.data() as Map)['customerData']
                                           ['lastName'];
                                 },
                                 onChanged: (QueryDocumentSnapshot? value) {
@@ -334,7 +333,6 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                               margin: EdgeInsets.only(top: 15),
                               child: DropdownSearch<QueryDocumentSnapshot>(
                                 mode: Mode.MENU,
-                                showSelectedItem: false,
                                 items: staffSnapshot?.docs,
                                 label: selectedStaffSnapshot == null
                                     ? 'Admin'
@@ -345,10 +343,10 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
 
                                 selectedItem: selectedStaffSnapshot,
                                 itemAsString: (item) {
-                                  return (item.data() as Map)['staffData']
+                                  return (item?.data() as Map)['staffData']
                                           ['firstName'] +
                                       ' ' +
-                                      (item.data() as Map)['staffData']
+                                      (item?.data() as Map)['staffData']
                                           ['lastName'];
                                 },
                                 onChanged: (QueryDocumentSnapshot? value) {
@@ -1234,7 +1232,6 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                     margin: EdgeInsets.only(top: 15),
                                     child: DropdownSearch<String>(
                                       mode: Mode.MENU,
-                                      showSelectedItem: false,
                                       items: [
                                         "order",
                                         "cutting",
@@ -1265,7 +1262,6 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                     child: DropdownSearch<String>(
                                       mode: Mode.MENU,
                                       enabled: false,
-                                      showSelectedItem: false,
                                       items: [
                                         "partially paid",
                                         "No payment",

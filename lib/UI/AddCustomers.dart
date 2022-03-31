@@ -313,7 +313,6 @@ class _AddCustomerState extends State<AddCustomer> {
                               padding: EdgeInsets.only(left: 10),
                               child: DropdownSearch<String>(
                                 mode: Mode.MENU,
-                                showSelectedItem: false,
                                 items: ["Male", "Female", "Other"],
                                 label: "Select Sex",
                                 hint: "Sex",

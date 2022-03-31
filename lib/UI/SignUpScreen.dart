@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:csc_picker/csc_picker.dart';
 import 'package:fashionpal/Utils/ProgressDialog.dart';
+import 'package:fashionpal/Utils/constants.dart';
 import 'package:fashionpal/Utils/sent-otp.dart';
 import 'package:fashionpal/Utils/sharPreference.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -41,6 +43,8 @@ class _SignUpScreen extends State<SignUpScreen> {
   TextEditingController country = TextEditingController();
   TextEditingController region = TextEditingController();
   TextEditingController city = TextEditingController();
+  bool isChecked = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -415,12 +419,10 @@ class _SignUpScreen extends State<SignUpScreen> {
                               fillColor: appTheme),
                         ),
                         CSCPicker(
-                          stateDropdownLabel: region.text.isEmpty
-                              ? 'State'
-                              : region.text,
-                          countryDropdownLabel: country.text.isEmpty
-                              ? 'Country'
-                              : country.text,
+                          stateDropdownLabel:
+                              region.text.isEmpty ? 'State' : region.text,
+                          countryDropdownLabel:
+                              country.text.isEmpty ? 'Country' : country.text,
                           onCountryChanged: (value) {
                             setState(() {
                               // countryValue = value;
@@ -440,7 +442,6 @@ class _SignUpScreen extends State<SignUpScreen> {
                             });
                           },
                         ),
-
                         Container(
                             margin: EdgeInsets.only(top: 20, left: 20),
                             padding: EdgeInsets.all(10.0),
@@ -454,34 +455,64 @@ class _SignUpScreen extends State<SignUpScreen> {
                                   ),
                                 ),
                                 onTap: () async {
-                                  submitPhoneNumber(mobileNumberController,
-                                      context, false, true,
-                                      map: {
-                                        'firstName': firstName.text.trim(),
-                                        'lastName': lastName.text.trim(),
-                                        'phoneNumber':
-                                            mobileNumberController.text.trim(),
-                                        'companyName': companyName.text.trim(),
-                                        'address': address.text.trim(),
-                                        'logo': logoUrl,
-                                        'isEnabled': true,
-                                        'role': 'owner',
-                                        'customersCount': 0,
-                                        'searchMatch':
-                                            companyName.text.toString().replaceAll(' ', '').toLowerCase().toString(),
-                                        'createdAt': DateTime.now(),
-                                        'profileImage': '',
-                                        'sewingsCount': 0,
-                                        'totalExpenditure': 0,
-                                        'staffCount': 0,
-                                        'totalIncome': 0,
-                                        'senderId': 'fashionspal',
-                                        'city': city.text.trim(),
-                                        'country': country.text.trim(),
-                                        'state': region.text.trim(),
-                                      });
-                                  // Navigator.of(context).pop(true);
+                                  if (isChecked) {
+                                    ProgressDialog.showLoaderDialog(context);
+                                    submitPhoneNumber(mobileNumberController,
+                                        context, false, true,
+                                        map: {
+                                          'firstName': firstName.text.trim(),
+                                          'lastName': lastName.text.trim(),
+                                          'phoneNumber': mobileNumberController
+                                              .text
+                                              .trim(),
+                                          'companyName':
+                                              companyName.text.trim(),
+                                          'address': address.text.trim(),
+                                          'logo': logoUrl,
+                                          'isEnabled': true,
+                                          'role': 'owner',
+                                          'customersCount': 0,
+                                          'searchMatch': companyName.text
+                                              .toString()
+                                              .replaceAll(' ', '')
+                                              .toLowerCase()
+                                              .toString(),
+                                          'createdAt': DateTime.now(),
+                                          'profileImage': '',
+                                          'sewingsCount': 0,
+                                          'totalExpenditure': 0,
+                                          'staffCount': 0,
+                                          'totalIncome': 0,
+                                          'senderId': 'fashionspal',
+                                          'city': city.text.trim(),
+                                          'country': country.text.trim(),
+                                          'state': region.text.trim(),
+                                        });
+                                    // Navigator.of(context).pop(true);
+                                  } else {
+                                    buildErrorDialog(context, '',
+                                        'Please read and accept privacy policy',
+                                        () {
+                                      Navigator.pop(context);
+                                    });
+                                  }
                                 })),
+                        Row(
+                          children: [
+                            Checkbox(
+                              checkColor: Colors.greenAccent,
+                              activeColor: Colors.red,
+                              value: isChecked,
+                              onChanged: (value) {
+                                setState(() {
+                                  isChecked = value!;
+                                });
+                              },
+                            ),
+                            Flexible(
+                                child: privacyPolicyLinkAndTermsOfService()),
+                          ],
+                        ),
                       ],
                     ),
                   ),
@@ -490,6 +521,45 @@ class _SignUpScreen extends State<SignUpScreen> {
             )),
       ],
     )));
+  }
+
+  Widget privacyPolicyLinkAndTermsOfService() {
+    return Container(
+      alignment: Alignment.center,
+      padding: EdgeInsets.all(10),
+      child: Center(
+          child: Text.rich(TextSpan(
+              text: 'By continuing, you agree to our ',
+              style: TextStyle(fontSize: 16, color: Colors.black),
+              children: <TextSpan>[
+            TextSpan(
+                text: 'Terms of Service',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.black,
+                  decoration: TextDecoration.underline,
+                ),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () {
+                    // code to open / launch terms of service link here
+                  }),
+            TextSpan(
+                text: ' and ',
+                style: TextStyle(fontSize: 18, color: Colors.black),
+                children: <TextSpan>[
+                  TextSpan(
+                      text: 'Privacy Policy',
+                      style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.black,
+                          decoration: TextDecoration.underline),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          // code to open / launch privacy policy link here
+                        })
+                ])
+          ]))),
+    );
   }
 
   Future<void> _showChoiceDialog(BuildContext context) {
@@ -570,7 +640,7 @@ class _SignUpScreen extends State<SignUpScreen> {
     }
   }
 
-  String? logoUrl= '';
+  String? logoUrl = '';
 
   Future uploadImageToFirebase(BuildContext context, File _imageFile) async {
     var firebaseStorageRef = FirebaseStorage.instance.ref().child(

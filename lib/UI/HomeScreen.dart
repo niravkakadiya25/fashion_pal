@@ -514,6 +514,8 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       onTap: () {
+                        Navigator.push(context,
+                            BouncyPageRoute(widget: CommunicationScreen()));
                         if (isStaffUser) {
                           print(permissionList[2].permission);
                           if (permissionList[2].isGranted ?? false) {
@@ -524,8 +526,7 @@ class _HomePageState extends State<HomePage> {
                             return;
                           }
                         }
-                        Navigator.push(context,
-                            BouncyPageRoute(widget: CommunicationScreen()));
+
                       },
                     ),
                     InkWell(
@@ -843,13 +844,7 @@ class _HomePageState extends State<HomePage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Container(
-                            alignment: Alignment.centerLeft,
-                            child: Image(
-                              image: AssetImage('images/back.png'),
-                              width: 30,
-                              height: 30,
-                            )),
+
                         Container(
                           width: 250,
                           height: 40,
@@ -903,6 +898,8 @@ class _HomePageState extends State<HomePage> {
                 MaterialButton(
                   padding: EdgeInsets.only(top: 5, bottom: 5),
                   onPressed: () {
+                    isSearching  = false;
+                    editingController.clear();
                     setState(() {
                       _selectedIndex = 0;
                     });
@@ -931,6 +928,8 @@ class _HomePageState extends State<HomePage> {
                 MaterialButton(
                   padding: EdgeInsets.only(top: 5, bottom: 5),
                   onPressed: () {
+                    isSearching  = false;
+                    editingController.clear();
                     setState(() {
                       _selectedIndex = 1;
                     });
@@ -959,6 +958,10 @@ class _HomePageState extends State<HomePage> {
                 MaterialButton(
                   padding: EdgeInsets.only(top: 5, bottom: 5),
                   onPressed: () {
+                    isSearching  = false;
+                    setState(() {
+                      _selectedIndex = 2;
+                    });   editingController.clear();
                     if (isStaffUser) {
                       print(permissionList[1].permission);
                       if (permissionList[1].isGranted ?? false) {
@@ -999,6 +1002,9 @@ class _HomePageState extends State<HomePage> {
                 MaterialButton(
                   padding: EdgeInsets.only(top: 5, bottom: 5),
                   onPressed: () {
+                    isSearching  = false;
+                    editingController.clear();
+
                     setState(() {
                       _selectedIndex = 3;
                     });
@@ -1053,7 +1059,10 @@ class _HomePageState extends State<HomePage> {
           query: editingController.text.trim().toString(),
         );
       case 1:
-        return SewingScreen();
+        return SewingScreen(
+          isSearching: isSearching,
+          query: editingController.text.trim().toString(),
+        );
       case 2:
         return FinanceScreen();
       case 3:

@@ -9,7 +9,14 @@ import '../BouncyPageRoute.dart';
 import 'SewingItem.dart';
 
 class SewingScreen extends StatefulWidget {
-  _SewingScreenState createState() => new _SewingScreenState();
+  final bool isSearching;
+  final String? query;
+
+  const SewingScreen({Key? key, this.isSearching = false, this.query})
+      : super(key: key);
+
+  @override
+  _SewingScreenState createState() => _SewingScreenState();
 }
 
 class _SewingScreenState extends State<SewingScreen> {
@@ -29,58 +36,91 @@ class _SewingScreenState extends State<SewingScreen> {
     super.initState();
   }
 
+  List<QueryDocumentSnapshot>? sewingSnapshot;
+  List<QueryDocumentSnapshot>? searchSewingSnapshot;
+
   Future<void> getData() async {
     userId = await getOwnerId();
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('sewings')
+        .where("ownerId", isEqualTo: userId)
+        .get();
+    if (snapshot.docs.isEmpty) {
+      sewingSnapshot = [];
+    } else {
+      sewingSnapshot = [];
+      sewingSnapshot?.addAll(snapshot.docs);
+    }
+
     setState(() {});
+  }
+
+  Widget getSearchData() {
+    searchSewingSnapshot = [];
+    sewingSnapshot?.forEach((element) {
+      if (((element.data() as Map)['sewingData']['title'])
+              .toString()
+              .toLowerCase()
+              .contains((widget.query ?? '').toString().toLowerCase()) ||
+          ((element.data() as Map)['sewingData']['customerData']['firstName'])
+              .toString()
+              .toLowerCase()
+              .contains((widget.query ?? '').toString().toLowerCase()) ||
+          ((element.data() as Map)['sewingData']['customerData']['phoneNumber'])
+              .toString()
+              .toLowerCase()
+              .contains((widget.query ?? '').toString().toLowerCase())) {
+        searchSewingSnapshot?.add(element);
+      }
+    });
+    return item(searchSewingSnapshot);
   }
 
   Widget _build(BuildContext context) {
     return Stack(
       children: [
-        StreamBuilder(
-            stream: FirebaseFirestore.instance
-                .collection('sewings')
-                .where("ownerId", isEqualTo: userId)
-                .snapshots(),
-            builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (!snapshot.hasData) {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-              return GridView.builder(
-                itemCount: snapshot.data?.docs.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 5,
-                    mainAxisSpacing: 5,
-                    childAspectRatio: 1.40),
-                itemBuilder: (BuildContext context, int index) =>
-                    SewingItem(snapshot.data?.docs[index]),
-              );
-            }),
-        // Align(
-        //   alignment: Alignment.bottomRight,
-        //   child: Container(
-        //       height: 100,
-        //       width: 200,
-        //       child: InkWell(
-        //         onTap: () async {
-        //           await Navigator.push(
-        //               context, new BouncyPageRoute(widget: AddSewingNewScreen()));
-        //         },
-        //         child: Container(
-        //             padding: EdgeInsets.only(top: 10, right: 10),
-        //             alignment: Alignment.bottomRight,
-        //             child: Align(
-        //                 alignment: Alignment.bottomRight,
-        //                 child: getImageAssets())),
-        //       )),
-        // )
-
+        widget.isSearching
+            ? getSearchData()
+            : sewingSnapshot == null
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : (sewingSnapshot?.isEmpty ?? true)
+                    ? Center(
+                        child: Text('No Customer'),
+                      )
+                    : Container(
+                        child: GridView.builder(
+                          itemCount: sewingSnapshot?.length,
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 1,
+                                  mainAxisSpacing: 5,
+                                  childAspectRatio: 1.15),
+                          itemBuilder: (BuildContext context, int index) {
+                            return SewingItem(sewingSnapshot?[index]);
+                          },
+                        ),
+                      ),
       ],
     );
   }
+
+  Widget item(List<QueryDocumentSnapshot>? snapshots) {
+    return GridView.builder(
+      itemCount: snapshots?.length,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 1,
+          mainAxisSpacing: 5,
+          childAspectRatio: 1.15),
+      itemBuilder: (BuildContext context, int index) {
+        return SewingItem(snapshots?[index]);
+      },
+    );
+  }
+
   Widget getImageAssets() {
     AssetImage assetImage = AssetImage('images/add_sewing.png');
     Image image = Image(image: assetImage, width: 180.0, height: 100.0);

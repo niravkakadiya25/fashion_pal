@@ -13,10 +13,12 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/-373575233/android.firebase_storage.iml" filepath="$PROJECT_DIR$/.idea/modules/-373575233/android.firebase_storage.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/1391239403/android.flutter_local_notifications.iml" filepath="$PROJECT_DIR$/.idea/modules/1391239403/android.flutter_local_notifications.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1795790186/android.flutter_plugin_android_lifecycle.iml" filepath="$PROJECT_DIR$/.idea/modules/-1795790186/android.flutter_plugin_android_lifecycle.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1622394925/android.flutter_sms.iml" filepath="$PROJECT_DIR$/.idea/modules/1622394925/android.flutter_sms.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/-337054497/android.image_cropper.iml" filepath="$PROJECT_DIR$/.idea/modules/-337054497/android.image_cropper.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/513690218/android.image_picker.iml" filepath="$PROJECT_DIR$/.idea/modules/513690218/android.image_picker.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/341430521/android.permission_handler_android.iml" filepath="$PROJECT_DIR$/.idea/modules/341430521/android.permission_handler_android.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/1769307329/android.shared_preferences_android.iml" filepath="$PROJECT_DIR$/.idea/modules/1769307329/android.shared_preferences_android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1507391088/android.url_launcher_android.iml" filepath="$PROJECT_DIR$/.idea/modules/1507391088/android.url_launcher_android.iml" />
     </modules>
   </component>
 </project>

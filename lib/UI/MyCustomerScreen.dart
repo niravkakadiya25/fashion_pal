@@ -19,7 +19,6 @@ import 'HomeScreen.dart';
 
 class MyContactScreen extends StatefulWidget {
   final bool isSearching;
-
   final String? query;
 
   const MyContactScreen({Key? key, this.isSearching = false, this.query})
