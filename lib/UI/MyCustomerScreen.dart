@@ -31,7 +31,6 @@ class MyContactScreen extends StatefulWidget {
 class _MyContactScreenState extends State<MyContactScreen> {
   final formKey = GlobalKey<FormState>();
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  var collection = FirebaseFirestore.instance.collection('customers');
   dynamic userId;
 
   late String customerId;
@@ -44,6 +43,7 @@ class _MyContactScreenState extends State<MyContactScreen> {
 
   List<QueryDocumentSnapshot>? customerSnapshot;
   List<QueryDocumentSnapshot>? searchCustomerSnapshot;
+  List<QueryDocumentSnapshot>? sewingSnapshot;
 
   Future<void> getData() async {
     userId = await getOwnerId();
@@ -57,6 +57,18 @@ class _MyContactScreenState extends State<MyContactScreen> {
       customerSnapshot = [];
       customerSnapshot?.addAll(snapshot.docs);
     }
+
+    QuerySnapshot snapshot1 = await FirebaseFirestore.instance
+        .collection('sewings')
+        .where("ownerId", isEqualTo: userId)
+        .get();
+    if (snapshot.docs.isEmpty) {
+      sewingSnapshot = [];
+    } else {
+      sewingSnapshot = [];
+      sewingSnapshot?.addAll(snapshot1.docs);
+    }
+
     setState(() {});
   }
 
@@ -92,231 +104,271 @@ class _MyContactScreenState extends State<MyContactScreen> {
         color: Colors.white,
         child: Stack(
           children: <Widget>[
-            widget.isSearching
-                ? getSearchData()
-                : customerSnapshot == null
-                    ? Center(
-                        child: CircularProgressIndicator(),
-                      )
-                    : (customerSnapshot?.isEmpty ?? true)
-                        ? Center(
-                            child: Text('No Customer'),
-                          )
-                        : Container(
-                            child: GridView.builder(
-                              itemCount: customerSnapshot?.length,
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 2,
-                                      crossAxisSpacing: 1,
-                                      mainAxisSpacing: 5,
-                                      childAspectRatio: 1.15),
-                              itemBuilder: (BuildContext context, int index) {
-                                Map<String, dynamic> documentFields =
-                                    customerSnapshot?[index]
-                                        .get("customerData");
-                                return Container(
-                                  child: Card(
-                                    color: plancolor,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0)),
-                                    child: Stack(children: <Widget>[
-                                      Column(children: <Widget>[
-                                        Card(
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(10.0)),
-                                          elevation: 0.0,
-                                          color: white_theme,
-                                          child: Column(
-                                            children: <Widget>[
-                                              Container(
-                                                padding: EdgeInsets.only(
-                                                    top: 10,
-                                                    bottom: 10,
-                                                    left: 5,
-                                                    right: 10),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: <Widget>[
-                                                    InkWell(
-                                                      // onTap: (){
-                                                      //   Navigator.push(context,
-                                                      //       new BouncyPageRoute(widget: CustomerDetails(documentFields))
-                                                      //   );
-                                                      // },
-                                                      child: Container(
-                                                        child: Row(
-                                                          children: <Widget>[
-                                                            InkWell(
-                                                              child: ClipRRect(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            20.0),
+            Align(
+              alignment: Alignment.topCenter,
+              child: Container(
+                  height: 30,
+                  width: MediaQuery.of(context).size.width,
+                  child: Container(
+                    padding: EdgeInsets.only(right: 35),
+                    color: plancolor,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                            'Customers:-' +
+                                (customerSnapshot?.length.toString() ?? '0'),
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.center),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        Text(
+                            'Sewings:-' +
+                                (sewingSnapshot?.length.toString() ?? '0'),
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.center),
+                      ],
+                    ),
+                  )),
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 35),
+              child: widget.isSearching
+                  ? getSearchData()
+                  : customerSnapshot == null
+                      ? Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : (customerSnapshot?.isEmpty ?? true)
+                          ? Center(
+                              child: Text('No Customer'),
+                            )
+                          : Container(
+                              child: GridView.builder(
+                                itemCount: customerSnapshot?.length,
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2,
+                                        crossAxisSpacing: 1,
+                                        mainAxisSpacing: 5,
+                                        childAspectRatio: 1.5),
+                                itemBuilder: (BuildContext context, int index) {
+                                  Map<String, dynamic> documentFields =
+                                      customerSnapshot?[index]
+                                          .get("customerData");
+                                  return Container(
+                                    child: Card(
+                                      color: plancolor,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10.0)),
+                                      child: Stack(children: <Widget>[
+                                        Column(children: <Widget>[
+                                          Card(
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        10.0)),
+                                            elevation: 0.0,
+                                            color: white_theme,
+                                            child: Column(
+                                              children: <Widget>[
+                                                Container(
+                                                  padding: EdgeInsets.only(
+                                                      top: 10,
+                                                      bottom: 10,
+                                                      left: 5,
+                                                      right: 10),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: <Widget>[
+                                                      InkWell(
+                                                        // onTap: (){
+                                                        //   Navigator.push(context,
+                                                        //       new BouncyPageRoute(widget: CustomerDetails(documentFields))
+                                                        //   );
+                                                        // },
+                                                        child: Container(
+                                                          child: Row(
+                                                            children: <Widget>[
+                                                              InkWell(
                                                                 child:
-                                                                    Image.asset(
-                                                                  "images/logo.png",
-                                                                  fit: BoxFit
-                                                                      .fill,
-                                                                  height: 20.0,
-                                                                  width: 20.0,
+                                                                    ClipRRect(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              20.0),
+                                                                  child: Image
+                                                                      .asset(
+                                                                    "images/logo.png",
+                                                                    fit: BoxFit
+                                                                        .fill,
+                                                                    height:
+                                                                        20.0,
+                                                                    width: 20.0,
+                                                                  ),
                                                                 ),
                                                               ),
-                                                            ),
-                                                            Container(
-                                                                margin: EdgeInsets
-                                                                    .only(
-                                                                        left:
-                                                                            5),
-                                                                child: Column(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .spaceEvenly,
-                                                                  crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .start,
-                                                                  children: [
-                                                                    Text(
-                                                                        documentFields[
-                                                                            "firstName"],
-                                                                        style: TextStyle(
-                                                                            color: Colors
-                                                                                .black,
-                                                                            fontSize:
-                                                                                11,
-                                                                            fontWeight: FontWeight
-                                                                                .bold),
-                                                                        textAlign:
-                                                                            TextAlign.center),
-                                                                    Container(
-                                                                        margin: EdgeInsets.only(
-                                                                            left:
-                                                                                10,
-                                                                            right:
-                                                                                10),
-                                                                        color: Colors
-                                                                            .black,
-                                                                        height:
-                                                                            1),
-                                                                    isStaffUser
-                                                                        ? (permissionList[0].isGranted ??
-                                                                                false)
-                                                                            ? Container(
-                                                                                alignment: Alignment.centerRight,
-                                                                                padding: EdgeInsets.only(right: 20),
-                                                                                child: Text(documentFields["phoneNumber"],
-                                                                                    style: TextStyle(
-                                                                                      fontSize: 12,
-                                                                                      fontWeight: FontWeight.bold,
-                                                                                    ),
-                                                                                    textAlign: TextAlign.center))
-                                                                            : Container()
-                                                                        : Text(documentFields["phoneNumber"],
-                                                                            style: TextStyle(
-                                                                              fontSize: 12,
-                                                                              fontWeight: FontWeight.bold,
-                                                                            ),
-                                                                            textAlign: TextAlign.center),
-                                                                  ],
-                                                                ))
-                                                          ],
+                                                              Container(
+                                                                  margin: EdgeInsets
+                                                                      .only(
+                                                                          left:
+                                                                              5),
+                                                                  child: Column(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceEvenly,
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .start,
+                                                                    children: [
+                                                                      Text(
+                                                                          documentFields[
+                                                                              "firstName"],
+                                                                          style: TextStyle(
+                                                                              color: Colors.black,
+                                                                              fontSize: 11,
+                                                                              fontWeight: FontWeight.bold),
+                                                                          textAlign: TextAlign.center),
+                                                                      Container(
+                                                                          margin: EdgeInsets.only(
+                                                                              left:
+                                                                                  10,
+                                                                              right:
+                                                                                  10),
+                                                                          color: Colors
+                                                                              .black,
+                                                                          height:
+                                                                              1),
+                                                                      isStaffUser
+                                                                          ? (permissionList[0].isGranted ?? false)
+                                                                              ? Container(
+                                                                                  alignment: Alignment.centerRight,
+                                                                                  padding: EdgeInsets.only(right: 20),
+                                                                                  child: Text(documentFields["phoneNumber"],
+                                                                                      style: TextStyle(
+                                                                                        fontSize: 12,
+                                                                                        fontWeight: FontWeight.bold,
+                                                                                      ),
+                                                                                      textAlign: TextAlign.center))
+                                                                              : Container()
+                                                                          : Text(documentFields["phoneNumber"],
+                                                                              style: TextStyle(
+                                                                                fontSize: 12,
+                                                                                fontWeight: FontWeight.bold,
+                                                                              ),
+                                                                              textAlign: TextAlign.center),
+                                                                    ],
+                                                                  ))
+                                                            ],
+                                                          ),
                                                         ),
                                                       ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Container(
-                                            margin: EdgeInsets.only(right: 10),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: <Widget>[
-                                                InkWell(
-                                                  child: Container(
-                                                    margin: EdgeInsets.only(
-                                                        top: 5, left: 10),
-                                                    child: Column(
-                                                      children: [
-                                                        Image.asset(
-                                                          "images/ic_sewing.png",
-                                                          fit: BoxFit.fill,
-                                                          height: 25.0,
-                                                          width: 25.0,
-                                                        ),
-                                                        Text('Sew'),
-                                                      ],
-                                                    ),
+                                                    ],
                                                   ),
-                                                  onTap: () async {
-                                                    await Navigator.push(
-                                                        context,
-                                                        new BouncyPageRoute(
-                                                            widget:
-                                                                AddSewingNewScreen(
-                                                          isFromCustomerScreen:
-                                                              true,
-                                                          customerDocumentSnapshot:
-                                                              customerSnapshot![
-                                                                  index],
-                                                        )));
-                                                  },
                                                 ),
-                                                Container(
-                                                  margin: EdgeInsets.only(
-                                                      top: 5, bottom: 5),
-                                                  color: Colors.white,
-                                                  width: 1,
-                                                  height: 25,
-                                                ),
-                                                InkWell(
-                                                  child: Container(
-                                                    margin: EdgeInsets.only(
-                                                        top: 5, right: 10),
-                                                    child: Column(
-                                                      children: [
-                                                        Image.asset(
-                                                          "images/ic_menu.png",
-                                                          fit: BoxFit.fill,
-                                                          height: 25.0,
-                                                          width: 25.0,
-                                                        ),
-                                                        Text('Details'),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  onTap: () async {
-                                                    customerId =
-                                                        customerSnapshot![index]
-                                                            .get("customerId");
-                                                    await Navigator.push(
-                                                        context,
-                                                        new BouncyPageRoute(
-                                                            widget: CustomerDetails(
-                                                                documentFields,
-                                                                customerId)));
-                                                    getData();
-                                                  },
-                                                )
                                               ],
-                                            ))
-                                      ])
-                                    ]),
-                                  ),
-                                );
-                              },
+                                            ),
+                                          ),
+                                          Container(
+                                              margin:
+                                                  EdgeInsets.only(right: 10),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: <Widget>[
+                                                  InkWell(
+                                                    child: Container(
+                                                      margin: EdgeInsets.only(
+                                                          top: 5, left: 10),
+                                                      child: Column(
+                                                        children: [
+                                                          Image.asset(
+                                                            "images/ic_sewing.png",
+                                                            fit: BoxFit.fill,
+                                                            height: 25.0,
+                                                            width: 25.0,
+                                                          ),
+                                                          Text('Sew'),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    onTap: () async {
+                                                      await Navigator.push(
+                                                          context,
+                                                          new BouncyPageRoute(
+                                                              widget:
+                                                                  AddSewingNewScreen(
+                                                            isFromCustomerScreen:
+                                                                true,
+                                                            customerDocumentSnapshot:
+                                                                customerSnapshot![
+                                                                    index],
+                                                          )));
+                                                    },
+                                                  ),
+                                                  Container(
+                                                    margin: EdgeInsets.only(
+                                                        top: 5, bottom: 5),
+                                                    color: Colors.white,
+                                                    width: 1,
+                                                    height: 25,
+                                                  ),
+                                                  InkWell(
+                                                    child: Container(
+                                                      margin: EdgeInsets.only(
+                                                          top: 5, right: 10),
+                                                      child: Column(
+                                                        children: [
+                                                          Image.asset(
+                                                            "images/ic_menu.png",
+                                                            fit: BoxFit.fill,
+                                                            height: 25.0,
+                                                            width: 25.0,
+                                                          ),
+                                                          Text('Details'),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    onTap: () async {
+                                                      customerId =
+                                                          customerSnapshot![
+                                                                  index]
+                                                              .get(
+                                                                  "customerId");
+                                                      await Navigator.push(
+                                                          context,
+                                                          new BouncyPageRoute(
+                                                              widget: CustomerDetails(
+                                                                  documentFields,
+                                                                  customerId)));
+                                                      getData();
+                                                    },
+                                                  )
+                                                ],
+                                              ))
+                                        ])
+                                      ]),
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
-                          ),
+            ),
             Align(
               alignment: Alignment.bottomRight,
               child: Container(

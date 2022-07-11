@@ -53,7 +53,7 @@ submitPhoneNumber(
     print('codeSent');
     _verificationId = verificationId;
     print(verificationId);
-    _code = code!;
+    _code = code;
     print(code.toString());
     _status = 'Code Sent\n';
     ProgressDialog.dismissDialog(context);
@@ -97,7 +97,10 @@ submitPhoneNumber(
 
     /// After automatic code retrival `tmeout` this function is called
     codeAutoRetrievalTimeout: codeAutoRetrievalTimeout,
-  ); // All the callbacks are above
+  ).catchError((onError){
+    ProgressDialog.dismissDialog(context);
+
+  }); // All the callbacks are above
 }
 
 Future<bool?> submitOTP(_otpController, context, map,
@@ -247,6 +250,8 @@ Future<bool?> _login(context, map, AuthCredential credential,
 }
 
 void _handleError(e, context) {
+  ProgressDialog.dismissDialog(context);
+
   print(e.message.toString());
   ScaffoldMessenger.of(context)
       .showSnackBar(SnackBar(content: Text(e.message.toString())));

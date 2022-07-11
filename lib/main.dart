@@ -1,4 +1,5 @@
 // @dart=2.9
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fashionpal/SplashScreen.dart';
 import 'package:fashionpal/UI/AddCustomers.dart';
 import 'package:fashionpal/UI/CustomerDetails.dart';
@@ -10,43 +11,44 @@ import 'package:fashionpal/UI/MyProfileScreen.dart';
 import 'package:fashionpal/UI/OTPScreen.dart';
 import 'package:fashionpal/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'Utils/Notification.dart';
 
-Future <void> main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initFirebase();
 
+  FirebaseFirestore.instance
+      .enablePersistence(const PersistenceSettings(synchronizeTabs: true));
 
-  runApp(
-       MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: "FashionPal",
-        home: SplashScreen(),
-        routes:routes,
-          theme: ThemeData(
-            scaffoldBackgroundColor: Colors.white,
-            appBarTheme: const AppBarTheme(
-              color: appTheme,
-              textTheme: TextTheme(
-                //rgb(136,252,254)
-                subtitle1: TextStyle(
-                    color: appTheme,
-                    fontSize: 20,
-                    fontStyle: FontStyle.italic),
-              ),
-            ),
-            primaryTextTheme: const TextTheme(
-              subtitle2: TextStyle(),
-              button: TextStyle(),
-            ).apply(
-              bodyColor: appTheme,
-              displayColor: appTheme,
-            )),
-      )
-  );
+  FirebaseFirestore.instance.settings =
+  const Settings(cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED);
+
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    title: "FashionPal",
+    home: SplashScreen(),
+    routes: routes,
+    theme: ThemeData(
+        scaffoldBackgroundColor: Colors.white,
+        appBarTheme: const AppBarTheme(
+          color: appTheme,
+          textTheme: TextTheme(
+            //rgb(136,252,254)
+            subtitle1: TextStyle(
+                color: appTheme, fontSize: 20, fontStyle: FontStyle.italic),
+          ),
+        ),
+        primaryTextTheme: const TextTheme(
+          subtitle2: TextStyle(),
+          button: TextStyle(),
+        ).apply(
+          bodyColor: appTheme,
+          displayColor: appTheme,
+        )),
+  ));
 }
-
 
 final routes = {
   // '/loginpage': (BuildContext context) => LoginPage(),

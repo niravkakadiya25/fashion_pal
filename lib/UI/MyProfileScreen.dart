@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fashionpal/UI/EditCompanyProfileScreen.dart';
 import 'package:fashionpal/UI/EditProfileScreen.dart';
+import 'package:fashionpal/UI/update_password.dart';
 import 'package:fashionpal/Utils/ProgressDialog.dart';
 import 'package:fashionpal/Utils/sharPreference.dart';
 import 'package:fashionpal/colors.dart';
@@ -514,6 +515,60 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                       documentSnapshot: documentSnapshot,
                                     )));
                                 getUserData();
+                              },
+                              color: appTheme,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                              ),
+                            ),
+                          ),
+                          // Container(
+                          //   margin: EdgeInsets.only(top: 20, left: 10),
+                          //   height: 40,
+                          //   child: RaisedButton(
+                          //     child: Center(
+                          //       child: Text(
+                          //         "Update Company",
+                          //         style: TextStyle(
+                          //             fontSize: 14,
+                          //             color: Colors.white,
+                          //             fontWeight: FontWeight.bold),
+                          //       ),
+                          //     ),
+                          //     onPressed: () {
+                          //       Navigator.push(
+                          //           context,
+                          //           BouncyPageRoute(
+                          //               widget: EditCompanyProfileScreen()));
+                          //     },
+                          //     color: appTheme,
+                          //     shape: RoundedRectangleBorder(
+                          //       borderRadius: BorderRadius.circular(30.0),
+                          //     ),
+                          //   ),
+                          // ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(top: 20, right: 10),
+                            height: 40,
+                            child: RaisedButton(
+                              child: Center(
+                                child: Text(
+                                  "Update Password",
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              onPressed: () async {
+                                await Navigator.push(context,
+                                    BouncyPageRoute(widget: const UpdatePassword()));
                               },
                               color: appTheme,
                               shape: RoundedRectangleBorder(

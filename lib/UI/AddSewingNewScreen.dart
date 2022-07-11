@@ -1,7 +1,12 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_search/dropdown_search.dart';
+import 'package:fashionpal/Database/customer_data.dart';
+import 'package:fashionpal/Database/init_dtabse.dart';
+import 'package:fashionpal/Database/measurements.dart';
+import 'package:fashionpal/Database/sewing_data.dart';
 import 'package:fashionpal/UI/image.dart';
 import 'package:fashionpal/Utils/ProgressDialog.dart';
 import 'package:fashionpal/Utils/constants.dart';
@@ -13,6 +18,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -50,6 +56,8 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
 
   final ImagePicker _picker = ImagePicker();
 
+  dynamic ownerId;
+
   @override
   void initState() {
     getData();
@@ -62,6 +70,8 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
   QueryDocumentSnapshot? selectedSnapshot;
 
   getData() async {
+    ownerId = await getOwnerId();
+
     snapshot = await FirebaseFirestore.instance
         .collection('customers')
         .where('ownerId', isEqualTo: await getOwnerId())
@@ -107,7 +117,7 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
       duration.text =
           (widget.sewDetails?.data() as Map)['sewingData']['duration'] ?? '';
       cost.text =
-          (widget.sewDetails?.data() as Map)['sewingData']['cost'] ?? '';
+          (widget.sewDetails?.data() as Map)['sewingData']['cost'].toString();
       order.text =
           (widget.sewDetails?.data() as Map)['sewingData']['status'] ?? '';
       payment.text =
@@ -138,13 +148,13 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        padding: EdgeInsets.only(top: 50, bottom: 20),
+        padding: const EdgeInsets.only(top: 50, bottom: 20),
         color: light_grey_theme,
         alignment: Alignment.center,
         child: Container(
-          margin: EdgeInsets.only(left: 15, right: 15),
+          margin: const EdgeInsets.only(left: 15, right: 15),
           width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.all(Radius.circular(20))),
           child: Column(
@@ -152,7 +162,7 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
               Container(
                 width: MediaQuery.of(context).size.width,
                 height: 60,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                     color: Colors.blue,
                     borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(20),
@@ -166,7 +176,7 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                         },
                         child: Container(
                           alignment: Alignment.centerLeft,
-                          padding: EdgeInsets.only(left: 10),
+                          padding: const EdgeInsets.only(left: 10),
                           child: Image.asset(
                             "images/back.png",
                             color: Colors.white,
@@ -179,7 +189,7 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                     Expanded(
                       child: Container(
                         alignment: Alignment.centerLeft,
-                        child: Text(
+                        child: const Text(
                           "Add Sewing",
                           textAlign: TextAlign.left,
                           style: TextStyle(
@@ -192,7 +202,7 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                     Expanded(
                       child: Container(
                         alignment: Alignment.centerRight,
-                        padding: EdgeInsets.only(),
+                        padding: const EdgeInsets.only(),
                         child: Container(
                           child: InkWell(
                             // onTap: () {
@@ -227,7 +237,7 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                               height: 30,
                               child: Container(
                                   alignment: Alignment.centerLeft,
-                                  child: Text(
+                                  child: const Text(
                                     "Add Sewings Details",
                                     textAlign: TextAlign.left,
                                     style: TextStyle(
@@ -240,7 +250,7 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                           Padding(
                             padding: const EdgeInsets.only(top: 10),
                             child: Container(
-                              margin: EdgeInsets.only(top: 15),
+                              margin: const EdgeInsets.only(top: 15),
                               child: DropdownSearch<QueryDocumentSnapshot>(
                                 mode: Mode.MENU,
                                 items: snapshot?.docs,
@@ -275,11 +285,11 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                               child: Container(
                                 height: 40,
                                 child: Container(
-                                  margin: EdgeInsets.only(top: 15),
+                                  margin: const EdgeInsets.only(top: 15),
                                   child: TextField(
                                     controller: sewTitle,
                                     keyboardType: TextInputType.text,
-                                    decoration: InputDecoration(
+                                    decoration: const InputDecoration(
                                       focusedBorder: UnderlineInputBorder(
                                         borderSide:
                                             BorderSide(color: Colors.red),
@@ -294,11 +304,11 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                               child: Container(
                                 height: 40,
                                 child: Container(
-                                  margin: EdgeInsets.only(top: 15),
+                                  margin: const EdgeInsets.only(top: 15),
                                   child: TextField(
                                     controller: sewDescription,
                                     keyboardType: TextInputType.text,
-                                    decoration: InputDecoration(
+                                    decoration: const InputDecoration(
                                       focusedBorder: UnderlineInputBorder(
                                         borderSide:
                                             BorderSide(color: Colors.red),
@@ -313,11 +323,11 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                               child: Container(
                                 height: 40,
                                 child: Container(
-                                  margin: EdgeInsets.only(top: 15),
+                                  margin: const EdgeInsets.only(top: 15),
                                   child: TextField(
                                     controller: sewNumber,
                                     keyboardType: TextInputType.text,
-                                    decoration: InputDecoration(
+                                    decoration: const InputDecoration(
                                       focusedBorder: UnderlineInputBorder(
                                         borderSide:
                                             BorderSide(color: Colors.red),
@@ -330,7 +340,7 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                           Padding(
                             padding: const EdgeInsets.only(top: 10),
                             child: Container(
-                              margin: EdgeInsets.only(top: 15),
+                              margin: const EdgeInsets.only(top: 15),
                               child: DropdownSearch<QueryDocumentSnapshot>(
                                 mode: Mode.MENU,
                                 items: staffSnapshot?.docs,
@@ -363,7 +373,7 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                             ),
                           ),
                           Container(
-                            margin: EdgeInsets.only(top: 20),
+                            margin: const EdgeInsets.only(top: 20),
                             width: MediaQuery.of(context).size.width,
                             child: Column(
                                 mainAxisAlignment:
@@ -386,7 +396,7 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                               child: Container(
                                                 height: 20,
                                                 child: Container(
-                                                    child: Text(
+                                                    child: const Text(
                                                   "Measurement",
                                                   textAlign: TextAlign.left,
                                                   style: TextStyle(
@@ -433,7 +443,7 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                                 child: Container(
                                                   height: 20,
                                                   child: Container(
-                                                      child: Text(
+                                                      child: const Text(
                                                     "Load Previous",
                                                     textAlign: TextAlign.left,
                                                     style: TextStyle(
@@ -457,6 +467,9 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                                     'measurementsParent')
                                                 .where('isActive',
                                                     isEqualTo: true)
+                                                .where('sex',
+                                                    isEqualTo: selectedSnapshot == null ? '':((selectedSnapshot
+                                                        ?.data() as Map)['customerData']['sex']).toString().toLowerCase())
                                                 .get(),
                                             builder: (context,
                                                 AsyncSnapshot<
@@ -474,16 +487,17 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                                         .width -
                                                     150,
                                                 child: Padding(
-                                                  padding: EdgeInsets.only(
-                                                      top: 10,
-                                                      bottom: 5,
-                                                      left: 10,
-                                                      right: 10),
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 10,
+                                                          bottom: 5,
+                                                          left: 10,
+                                                          right: 10),
                                                   child: ListView.builder(
                                                     shrinkWrap: true,
                                                     reverse: true,
                                                     physics:
-                                                        NeverScrollableScrollPhysics(),
+                                                        const NeverScrollableScrollPhysics(),
                                                     itemBuilder:
                                                         (context, index) {
                                                       return GestureDetector(
@@ -888,7 +902,7 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: <Widget>[
                                       Container(
-                                          padding: EdgeInsets.only(
+                                          padding: const EdgeInsets.only(
                                               top: 10,
                                               bottom: 5,
                                               left: 10,
@@ -905,9 +919,10 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.start,
                                                 children: [
-                                                  Text('Fabric'),
+                                                  const Text('Fabric'),
                                                   Container(
-                                                    margin: EdgeInsets.only(
+                                                    margin:
+                                                        const EdgeInsets.only(
                                                       top: 10,
                                                     ),
                                                     child: fabrics.isEmpty
@@ -944,20 +959,21 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                                                     width: 100,
                                                                     color: Colors
                                                                         .black,
-                                                                    child: Icon(
+                                                                    child:
+                                                                        const Icon(
                                                                       Icons.add,
                                                                       color: Colors
                                                                           .white,
                                                                     ),
                                                                   ),
                                                                 ),
-                                                                SizedBox(
+                                                                const SizedBox(
                                                                   width: 20,
                                                                 ),
                                                                 ListView
                                                                     .builder(
                                                                   physics:
-                                                                      NeverScrollableScrollPhysics(),
+                                                                      const NeverScrollableScrollPhysics(),
                                                                   itemCount:
                                                                       fabrics
                                                                           .length,
@@ -1000,7 +1016,7 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                                                             child:
                                                                                 Container(
                                                                               color: Colors.black,
-                                                                              child: Icon(
+                                                                              child: const Icon(
                                                                                 Icons.close,
                                                                                 color: Colors.white,
                                                                               ),
@@ -1028,9 +1044,10 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.start,
                                                 children: [
-                                                  Text('Style'),
+                                                  const Text('Style'),
                                                   Container(
-                                                    margin: EdgeInsets.only(
+                                                    margin:
+                                                        const EdgeInsets.only(
                                                       top: 10,
                                                     ),
                                                     child: styles.isEmpty
@@ -1067,14 +1084,15 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                                                     width: 100,
                                                                     color: Colors
                                                                         .black,
-                                                                    child: Icon(
+                                                                    child:
+                                                                        const Icon(
                                                                       Icons.add,
                                                                       color: Colors
                                                                           .white,
                                                                     ),
                                                                   ),
                                                                 ),
-                                                                SizedBox(
+                                                                const SizedBox(
                                                                   width: 20,
                                                                 ),
                                                                 ListView
@@ -1121,7 +1139,7 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                                                             child:
                                                                                 Container(
                                                                               color: Colors.black,
-                                                                              child: Icon(
+                                                                              child: const Icon(
                                                                                 Icons.close,
                                                                                 color: Colors.white,
                                                                               ),
@@ -1155,12 +1173,12 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                               children: [
                                 Expanded(
                                   child: Container(
-                                    margin: EdgeInsets.only(top: 15),
+                                    margin: const EdgeInsets.only(top: 15),
                                     child: TextFormField(
                                       controller: duration,
                                       keyboardType:
                                           TextInputType.visiblePassword,
-                                      decoration: InputDecoration(
+                                      decoration: const InputDecoration(
                                         focusedBorder: UnderlineInputBorder(
                                           borderSide:
                                               BorderSide(color: Colors.red),
@@ -1170,16 +1188,16 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                                 Expanded(
                                   child: Container(
-                                    margin: EdgeInsets.only(top: 15),
+                                    margin: const EdgeInsets.only(top: 15),
                                     child: TextFormField(
                                       controller: cost,
                                       keyboardType: TextInputType.number,
-                                      decoration: InputDecoration(
+                                      decoration: const InputDecoration(
                                         focusedBorder: UnderlineInputBorder(
                                           borderSide:
                                               BorderSide(color: Colors.red),
@@ -1195,7 +1213,7 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                           Padding(
                             padding: const EdgeInsets.only(left: 2, top: 10),
                             child: Container(
-                              margin: EdgeInsets.only(top: 15),
+                              margin: const EdgeInsets.only(top: 15),
                               child: TextFormField(
                                 onChanged: (value) {
                                   if (cost.text.trim().isEmpty) {
@@ -1214,7 +1232,7 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                 },
                                 controller: payment,
                                 keyboardType: TextInputType.number,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   focusedBorder: UnderlineInputBorder(
                                     borderSide: BorderSide(color: Colors.red),
                                   ),
@@ -1229,7 +1247,7 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                               children: [
                                 Expanded(
                                   child: Container(
-                                    margin: EdgeInsets.only(top: 15),
+                                    margin: const EdgeInsets.only(top: 15),
                                     child: DropdownSearch<String>(
                                       mode: Mode.MENU,
                                       items: [
@@ -1253,12 +1271,12 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                                 Expanded(
                                   child: Container(
-                                    margin: EdgeInsets.only(top: 15),
+                                    margin: const EdgeInsets.only(top: 15),
                                     child: DropdownSearch<String>(
                                       mode: Mode.MENU,
                                       enabled: false,
@@ -1291,12 +1309,12 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                               children: [
                                 Expanded(
                                   child: Container(
-                                    margin: EdgeInsets.only(top: 15),
+                                    margin: const EdgeInsets.only(top: 15),
                                     child: TextFormField(
                                       controller: reminder,
                                       keyboardType:
                                           TextInputType.visiblePassword,
-                                      decoration: InputDecoration(
+                                      decoration: const InputDecoration(
                                         focusedBorder: UnderlineInputBorder(
                                           borderSide:
                                               BorderSide(color: Colors.red),
@@ -1306,19 +1324,19 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                                 Expanded(
                                   child: GestureDetector(
                                     onTap: () async {
-                                      if(sewTitle.text.trim().isEmpty){
-                                        buildErrorDialog(context, '',
-                                            'Please Enter Title',
-                                                () {
-                                              Navigator.pop(context);
-                                            });
-                                      }else {
+                                      if (sewTitle.text.trim().isEmpty) {
+                                        buildErrorDialog(
+                                            context, '', 'Please Enter Title',
+                                            () {
+                                          Navigator.pop(context);
+                                        });
+                                      } else {
                                         ProgressDialog.showLoaderDialog(
                                             context);
 
@@ -1331,29 +1349,30 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                                   : int.parse(cost.text),
                                               'createdAt': DateTime.now(),
                                               'duration': duration.text,
-                                              'description': sewDescription
-                                                  .text,
+                                              'description':
+                                                  sewDescription.text,
                                               'status': order.text,
                                               'title': sewTitle.text,
                                               'amountPaid': payment.text.isEmpty
                                                   ? 0
                                                   : int.parse(payment.text),
-                                              'paymentStatus': paymentStatus
-                                                  .text,
+                                              'paymentStatus':
+                                                  paymentStatus.text,
                                               'reminder': reminder.text,
                                               'phoneNumber': sewNumber.text,
-                                              'staffData': selectedStaffSnapshot ==
-                                                  null
-                                                  ? {}
-                                                  : (selectedStaffSnapshot
-                                                  ?.data()
-                                              as Map)['staffData'],
-                                              'customerData': (selectedSnapshot
-                                                  ?.data() as Map)['customerData'],
-                                              'customerName':
-                                              (selectedSnapshot?.data()
-                                              as Map)['customerData']
-                                              ['firstName'],
+                                              'staffData':
+                                                  selectedStaffSnapshot == null
+                                                      ? {}
+                                                      : (selectedStaffSnapshot
+                                                              ?.data()
+                                                          as Map)['staffData'],
+                                              'customerData':
+                                                  (selectedSnapshot?.data()
+                                                      as Map)['customerData'],
+                                              'customerName': (selectedSnapshot
+                                                          ?.data()
+                                                      as Map)['customerData']
+                                                  ['firstName'],
                                               'fabrics': fabrics,
                                               'styles': styles,
                                             };
@@ -1366,31 +1385,31 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                                   : int.parse(cost.text),
                                               'createdAt': DateTime.now(),
                                               'duration': duration.text,
-                                              'description': sewDescription
-                                                  .text,
+                                              'description':
+                                                  sewDescription.text,
                                               'status': order.text,
                                               'title': sewTitle.text,
                                               'measurements': sewmap,
                                               'amountPaid': payment.text.isEmpty
                                                   ? 0
                                                   : int.parse(payment.text),
-                                              'paymentStatus': paymentStatus
-                                                  .text,
+                                              'paymentStatus':
+                                                  paymentStatus.text,
                                               'reminder': reminder.text,
                                               'phoneNumber': sewNumber.text,
                                               'staffData':
-                                              selectedStaffSnapshot == null
-                                                  ? {}
-                                                  : (selectedStaffSnapshot
-                                                  ?.data()
-                                              as Map)['staffData'],
+                                                  selectedStaffSnapshot == null
+                                                      ? {}
+                                                      : (selectedStaffSnapshot
+                                                              ?.data()
+                                                          as Map)['staffData'],
                                               'customerData':
-                                              (selectedSnapshot?.data()
-                                              as Map)['customerData'],
-                                              'customerName':
-                                              (selectedSnapshot?.data()
-                                              as Map)['customerData']
-                                              ['firstName'],
+                                                  (selectedSnapshot?.data()
+                                                      as Map)['customerData'],
+                                              'customerName': (selectedSnapshot
+                                                          ?.data()
+                                                      as Map)['customerData']
+                                                  ['firstName'],
                                               'fabrics': fabrics,
                                               'styles': styles,
                                             };
@@ -1405,31 +1424,31 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                                   : int.parse(cost.text),
                                               'createdAt': DateTime.now(),
                                               'duration': duration.text,
-                                              'description': sewDescription
-                                                  .text,
+                                              'description':
+                                                  sewDescription.text,
                                               'status': order.text,
                                               'title': sewTitle.text,
                                               'measurements': sewmap,
                                               'amountPaid': payment.text.isEmpty
                                                   ? 0
                                                   : int.parse(payment.text),
-                                              'paymentStatus': paymentStatus
-                                                  .text,
+                                              'paymentStatus':
+                                                  paymentStatus.text,
                                               'reminder': reminder.text,
                                               'phoneNumber': sewNumber.text,
                                               'staffData':
-                                              selectedStaffSnapshot == null
-                                                  ? {}
-                                                  : (selectedStaffSnapshot
-                                                  ?.data()
-                                              as Map)['staffData'],
+                                                  selectedStaffSnapshot == null
+                                                      ? {}
+                                                      : (selectedStaffSnapshot
+                                                              ?.data()
+                                                          as Map)['staffData'],
                                               'customerData':
-                                              (selectedSnapshot?.data()
-                                              as Map)['customerData'],
-                                              'customerName':
-                                              (selectedSnapshot?.data()
-                                              as Map)['customerData']
-                                              ['firstName'],
+                                                  (selectedSnapshot?.data()
+                                                      as Map)['customerData'],
+                                              'customerName': (selectedSnapshot
+                                                          ?.data()
+                                                      as Map)['customerData']
+                                                  ['firstName'],
                                               'fabrics': fabrics,
                                               'styles': styles,
                                             };
@@ -1441,18 +1460,18 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                                             map = {};
                                             buildErrorDialog(context, '',
                                                 'Please Select atleast one measurement',
-                                                    () {
-                                                  Navigator.pop(context);
-                                                });
+                                                () {
+                                              Navigator.pop(context);
+                                            });
                                             return;
                                           }
                                         }
                                       }
                                     },
                                     child: Container(
-                                      margin: EdgeInsets.only(top: 15),
+                                      margin: const EdgeInsets.only(top: 15),
                                       child: Image.asset(
-                                        "images/add_sewing.png",
+                                        "images/save_sewing.png",
                                         fit: BoxFit.fill,
                                         height: 45.0,
                                         width: 25.0,
@@ -1475,39 +1494,33 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
       ),
     );
   }
+
   uploadData(map) async {
     var ownerId = (await getOwnerId());
 
     DocumentReference documentReference =
-    FirebaseFirestore.instance
-        .collection('sewings')
-        .doc();
+        FirebaseFirestore.instance.collection('sewings').doc();
 
     await FirebaseFirestore.instance
         .collection('sewings')
         .doc((widget.isFromEdit ?? false)
-        ? widget.sewDetails?.id
-        : documentReference.id)
+            ? widget.sewDetails?.id
+            : documentReference.id)
         .set({
       'deletedForCustomer': false,
       'deletedForOwner': false,
-      'customerId': (selectedSnapshot?.data()
-      as Map)['customerId'],
+      'customerId': (selectedSnapshot?.data() as Map)['customerId'],
       'staffId': selectedStaffSnapshot == null
           ? ''
-          : (selectedStaffSnapshot?.data()
-      as Map)['staffId'],
-      'staffData':
-      selectedStaffSnapshot == null
+          : (selectedStaffSnapshot?.data() as Map)['staffId'],
+      'staffData': selectedStaffSnapshot == null
           ? {}
-          : (selectedStaffSnapshot?.data()
-      as Map)['staffData'],
+          : (selectedStaffSnapshot?.data() as Map)['staffData'],
       'sewingId': documentReference.id,
       'ownerId': ownerId.toString(),
       'sewingData': map,
     }, SetOptions(merge: true));
-    Navigator.of(context)
-        .popUntil((route) => route.isFirst);
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
   Map<String?, List<Map<String, String>>> sewmap = new Map();
@@ -1518,6 +1531,7 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
   DocumentSnapshot? snapshots;
 
   showDialogWithFields(parentname, parentId) async {
+    bool isDataSorted = await checkDataSorted(parentId);
     _controllerMap.clear();
     if (loadPreviousMeasurement) {
       if (snapshots?.exists ?? false) {
@@ -1572,73 +1586,168 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
     Widget _okButton() {
       return ElevatedButton(
         onPressed: () async {
-          List<Map<String, String>> list1 = [];
-          _controllerMap.forEach((key, controller) {
-            list1.add({key: controller.text});
-          });
+          if (isDataSorted) {
+            List<Map<String, String>> list1 = [];
+            _controllerMap.forEach((key, controller) {
+              list1.add({key: controller.text});
+            });
 
-          sewmap[parentname] = list1;
+            sewmap[parentname] = list1;
+          } else {
+            DocumentReference doc_ref = FirebaseFirestore.instance
+                .collection('measurementsRecord')
+                .doc();
+            print(ownerId);
+            doc_ref.set({
+              'id': doc_ref.id,
+              'ownerId': ownerId,
+              'parentId': parentId,
+              'measurements': list
+                  .map((e) =>
+                      Reviews(name: e.data()['name'], value: '').toJson())
+                  .toList()
+            });
+          }
 
           Navigator.pop(context);
         },
-        child: Text("OK"),
+        child: const Text("OK"),
       );
     }
 
-    // Create AlertDialog
-    AlertDialog alert = AlertDialog(
-      title: Text(parentname),
-      content: Container(
-          height: 500, width: 200, child: _futureBuilder(parentname, parentId)),
-      actions: [
-        _okButton(),
-      ],
-    );
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return alert;
+        return StatefulBuilder(builder: (context, StateSetter setState) {
+          return AlertDialog(
+            title: Text(parentname),
+            content: Container(
+                height: 500,
+                width: 200,
+                child: isDataSorted
+                    ? _futureBuilder(parentname, parentId)
+                    : _futureSortingBuilder(parentname, parentId, setState)),
+            actions: [
+              _okButton(),
+            ],
+          );
+        });
       },
     );
+  }
+
+  Future<bool> checkDataSorted(parentId) async {
+    QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore
+        .instance
+        .collection('measurementsRecord')
+        .where('ownerId', isEqualTo: ownerId)
+        .get();
+    if (querySnapshot.docs.isNotEmpty) {
+      bool isContain = querySnapshot.docs
+          .where((element) => element.data()['parentId'] == parentId)
+          .isNotEmpty;
+      return isContain;
+    }
+    return false;
   }
 
   Widget _futureBuilder(parentname, parentId) {
     return FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
       future: FirebaseFirestore.instance
-          .collection('measurementsList')
+          .collection('measurementsRecord')
           .where('parentId', isEqualTo: parentId)
           .get(),
       builder: (BuildContext context,
           AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
         if (!snapshot.hasData) {
-          return Align(
+          return const Align(
             alignment: Alignment.topCenter,
             child: Text("No item"),
           );
         }
 
-        final data = snapshot.data!;
-        return ListView.builder(
-          itemCount: data.docs.length,
-          shrinkWrap: true,
-          padding: EdgeInsets.all(5),
-          itemBuilder: (BuildContext context, int index) {
-            final controller =
-                _getControllerOf(parentname, data.docs[index]['name']);
-            final textField = TextField(
-              controller: controller,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "${data.docs[index]['name']}",
-                hintText: "${data.docs[index]['name']}",
-              ),
-            );
-            return Container(
-              child: textField,
-              padding: EdgeInsets.only(bottom: 10),
-            );
-          },
-        );
+        final data = snapshot.data!.docs;
+        if (data.isNotEmpty) {
+          List<dynamic> list = data.first.data()['measurements'];
+
+          return ListView.builder(
+            itemCount: list.length,
+            shrinkWrap: true,
+            padding: const EdgeInsets.all(5),
+            itemBuilder: (BuildContext context, int index) {
+              final controller = _getControllerOf(
+                  parentname, (list[index] as Map).keys.first.toString());
+              final textField = TextField(
+                controller: controller,
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: "${(list[index] as Map).keys.first.toString()}",
+                  hintText: "${(list[index] as Map).keys.first.toString()}",
+                ),
+              );
+              return Container(
+                child: textField,
+                padding: const EdgeInsets.only(bottom: 10),
+              );
+            },
+          );
+        } else {
+          return const Align(
+            alignment: Alignment.topCenter,
+            child: Text("No item"),
+          );
+        }
+      },
+    );
+  }
+
+  List<QueryDocumentSnapshot<Map<String, dynamic>>> list = [];
+
+  Widget _futureSortingBuilder(parentname, parentId, setState) {
+    return FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      future: FirebaseFirestore.instance
+          .collection('measurementsList')
+          .where('parentId', isEqualTo: parentId)
+          .orderBy('createdAt', descending: false)
+          .get(),
+      builder: (BuildContext context,
+          AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+        if (!snapshot.hasData) {
+          return const Align(
+            alignment: Alignment.topCenter,
+            child: Text("No item"),
+          );
+        }
+        list = snapshot.data?.docs ?? [];
+
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter alertState) {
+          return ReorderableListView(
+            children: list
+                .map((item) => ListTile(
+                      key: Key("${item.data()['name']}"),
+                      title: Text("${item.data()['name']}"),
+                      trailing: const Icon(Icons.menu),
+                    ))
+                .toList(),
+            shrinkWrap: true,
+            padding: const EdgeInsets.all(5),
+            onReorder: (int oldIndex, int newIndex) {
+              // dragging from top to bottom
+              if (newIndex > list.length) {
+                newIndex = list.length;
+              }
+              if (oldIndex < newIndex) newIndex -= 1;
+              alertState(() {
+                if (newIndex > oldIndex) {
+                  newIndex -= 1;
+                }
+                final item = list.removeAt(oldIndex);
+                list.insert(newIndex, item);
+              });
+            },
+          );
+        });
       },
     );
   }
@@ -1658,14 +1767,14 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
         context: context,
         builder: (BuildContext contexts) {
           return AlertDialog(
-            title: Text(
+            title: const Text(
               "Choose option",
               style: TextStyle(color: Colors.blue),
             ),
             content: SingleChildScrollView(
               child: ListBody(
                 children: [
-                  Divider(
+                  const Divider(
                     height: 1,
                     color: Colors.blue,
                   ),
@@ -1674,13 +1783,13 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
                       Navigator.pop(context);
                       _openGallery(context, isFabric);
                     },
-                    title: Text("Gallery"),
-                    leading: Icon(
+                    title: const Text("Gallery"),
+                    leading: const Icon(
                       Icons.account_box,
                       color: Colors.blue,
                     ),
                   ),
-                  Divider(
+                  const Divider(
                     height: 1,
                     color: Colors.blue,
                   ),
@@ -1690,8 +1799,8 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
 
                       _openCamera(context, isFabric);
                     },
-                    title: Text("Camera"),
-                    leading: Icon(
+                    title: const Text("Camera"),
+                    leading: const Icon(
                       Icons.camera,
                       color: Colors.blue,
                     ),
@@ -1712,21 +1821,86 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
       imageFile = pickedFile!;
     });
     if (imageFile != null) {
-      ProgressDialog.showLoaderDialog(context);
-      uploadImageToFirebase(context, File(imageFile!.path), isFabric);
+      File? file = await _cropImage();
+      if (file != null) {
+        if ((formatMB(await File(file.path).length())) < 3.0) {
+          ProgressDialog.showLoaderDialog(context);
+          uploadImageToFirebase(context, File(file.path), isFabric);
+        } else {
+          buildErrorDialog(context, '', 'Please select less than 3 MB Image',
+              () {
+            Navigator.pop(context);
+          });
+        }
+      }
     }
   }
 
   void _openCamera(BuildContext context, isFabric) async {
-    final pickedFile = await ImagePicker()
-        .getImage(source: ImageSource.camera, imageQuality: 50);
+    PickedFile? pickedFile = await ImagePicker().getImage(
+      source: ImageSource.camera,
+      imageQuality: 80,
+    );
     setState(() {
       imageFile = pickedFile!;
     });
     if (imageFile != null) {
-      ProgressDialog.showLoaderDialog(context);
-      uploadImageToFirebase(context, File(imageFile!.path), isFabric);
+      File? file = await _cropImage();
+      if (file != null) {
+        if ((formatMB(await File(file.path).length())) < 3.0) {
+          ProgressDialog.showLoaderDialog(context);
+          uploadImageToFirebase(context, File(file.path), isFabric);
+        } else {
+          buildErrorDialog(context, '', 'Please select less than 3 MB Image',
+              () {
+            Navigator.pop(context);
+          });
+        }
+      }
     }
+  }
+
+  Future<File?> _cropImage() async {
+    File? croppedFile = await ImageCropper.cropImage(
+        sourcePath: imageFile!.path,
+        aspectRatioPresets: Platform.isAndroid
+            ? [
+                CropAspectRatioPreset.square,
+                CropAspectRatioPreset.ratio3x2,
+                CropAspectRatioPreset.original,
+                CropAspectRatioPreset.ratio4x3,
+                CropAspectRatioPreset.ratio16x9
+              ]
+            : [
+                CropAspectRatioPreset.original,
+                CropAspectRatioPreset.square,
+                CropAspectRatioPreset.ratio3x2,
+                CropAspectRatioPreset.ratio4x3,
+                CropAspectRatioPreset.ratio5x3,
+                CropAspectRatioPreset.ratio5x4,
+                CropAspectRatioPreset.ratio7x5,
+                CropAspectRatioPreset.ratio16x9
+              ],
+        androidUiSettings: const AndroidUiSettings(
+            toolbarTitle: 'Image Resize',
+            toolbarColor: Colors.deepOrange,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false),
+        iosUiSettings: const IOSUiSettings(
+          title: 'Image Resize',
+        ));
+    return croppedFile;
+  }
+
+  double formatMB(bytes) {
+    var marker = 1024; // Change to 1000 if required
+    var decimal = 3; // Change as required
+    var megaBytes = marker * marker; // One MB is 1024 KB
+
+    print(((bytes / megaBytes) as double).toStringAsFixed(decimal));
+    return double.parse(
+        ((bytes / megaBytes) as double).toStringAsFixed(decimal));
   }
 
   Future uploadImageToFirebase(
@@ -1759,4 +1933,16 @@ class _AddSewingNewScreenState extends State<AddSewingNewScreen> {
     super.debugFillProperties(properties);
     properties.add(DiagnosticsProperty('snapshots', snapshots));
   }
+}
+
+class Reviews {
+  Reviews({
+    required this.name,
+    required this.value,
+  });
+
+  String name;
+  String value;
+
+  Map<String, dynamic> toJson() => {name: value};
 }

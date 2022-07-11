@@ -9,6 +9,8 @@ import 'package:fashionpal/UI/NotificationScreen.dart';
 import 'package:fashionpal/UI/SendSMSScreen.dart';
 import 'package:fashionpal/UI/SewingScreen.dart';
 import 'package:fashionpal/UI/StaffScreen.dart';
+import 'package:fashionpal/UI/subscription.dart';
+import 'package:fashionpal/UI/subscription_history.dart';
 import 'package:fashionpal/Utils/sharPreference.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,8 +20,11 @@ import '../BouncyPageRoute.dart';
 import '../colors.dart';
 import 'AddStaff.dart';
 import 'SideOptionScreen.dart';
+import 'balance_screen.dart';
 
 class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -206,6 +211,102 @@ class _HomePageState extends State<HomePage> {
                       onTap: () {
                         Navigator.push(context,
                             BouncyPageRoute(widget: MyProfileScreen()));
+                      },
+                    ),
+                 /*   InkWell(
+                      child: Container(
+                        height: 50,
+                        margin: EdgeInsets.only(top: 10),
+                        padding: EdgeInsets.only(left: 20),
+                        width: MediaQuery.of(context).size.width,
+                        alignment: Alignment.centerLeft,
+                        child: Row(
+                          children: [
+                            Image.asset(
+                              "images/user.png",
+                              height: 30,
+                              width: 30,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 10),
+                              child: Text(
+                                "Subscription ",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.normal),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(context,
+                            BouncyPageRoute(widget: SubscriptionScreen()));
+                      },
+                    ),
+                    InkWell(
+                      child: Container(
+                        height: 50,
+                        margin: EdgeInsets.only(top: 10),
+                        padding: EdgeInsets.only(left: 20),
+                        width: MediaQuery.of(context).size.width,
+                        alignment: Alignment.centerLeft,
+                        child: Row(
+                          children: [
+                            Image.asset(
+                              "images/user.png",
+                              height: 30,
+                              width: 30,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 10),
+                              child: Text(
+                                "Subscription History",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.normal),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(context,
+                            BouncyPageRoute(widget: SubscriptionHistory()));
+                      },
+                    ),*/
+                    InkWell(
+                      child: Container(
+                        height: 50,
+                        margin: EdgeInsets.only(top: 10),
+                        padding: EdgeInsets.only(left: 20),
+                        width: MediaQuery.of(context).size.width,
+                        alignment: Alignment.centerLeft,
+                        child: Row(
+                          children: [
+                            Image.asset(
+                              "images/user.png",
+                              height: 30,
+                              width: 30,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 10),
+                              child: Text(
+                                "Balance ",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.normal),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(context,
+                            BouncyPageRoute(widget: BalanceScreen()));
                       },
                     ),
                     InkWell(
@@ -482,8 +583,8 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       onTap: () {
-                        Navigator.push(context,
-                            BouncyPageRoute(widget: NotificationScreen()));
+                        // Navigator.push(context,
+                        //     BouncyPageRoute(widget: NotificationScreen()));
                       },
                     ),
                     InkWell(
@@ -908,9 +1009,10 @@ class _HomePageState extends State<HomePage> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
                       Image(
-                        image: AssetImage('images/shop.png'),
+                        image: AssetImage('images/customer_icon.png'),
                         width: 20,
                         height: 20,
+
                       ),
                       Text('My Customers',
                           textAlign: TextAlign.center,
@@ -938,7 +1040,7 @@ class _HomePageState extends State<HomePage> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
                       Image(
-                        image: AssetImage('images/shop.png'),
+                        image: AssetImage('images/sewing.png'),
                         width: 20,
                         height: 20,
                       ),
@@ -981,7 +1083,7 @@ class _HomePageState extends State<HomePage> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
                       Image(
-                        image: AssetImage('images/shop.png'),
+                        image: AssetImage('images/finance.png'),
                         width: 20,
                         height: 20,
                       ),

@@ -42,6 +42,34 @@ class _SendSMSScreen extends State<SendSMSScreen> {
     return SafeArea(
         child: Scaffold(
             key: scaffoldKey,
+            appBar: PreferredSize(
+              preferredSize: Size.fromHeight(50.0),
+              child: AppBar(
+                automaticallyImplyLeading: false,
+                leading: Padding(
+                  padding: const EdgeInsets.only(left: 20),
+                  child: InkWell(
+                    child: Icon(
+                      Icons.arrow_back,
+                      color: Colors.white,
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      // Navigator.push(context,
+                      //     MaterialPageRoute(builder: (context)=>EditMyProfile())
+                      // );
+                    },
+                  ),
+                ),
+                centerTitle: true,
+                title: Text(
+                  "Send SMS",
+                  style: TextStyle(
+                      fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
+                ),
+                backgroundColor: appTheme,
+              ),
+            ),
             body: SingleChildScrollView(
               child: Container(
                   child: Column(

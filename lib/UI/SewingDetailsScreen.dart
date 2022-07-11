@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fashionpal/SplashScreen.dart';
 import 'package:fashionpal/UI/EditProfileScreen.dart';

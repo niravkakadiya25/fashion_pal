@@ -14,8 +14,6 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../main.dart';
-
 class AddCustomer extends StatefulWidget {
   final bool isEdit;
   final Map<String, dynamic>? documentFields;
@@ -57,14 +55,15 @@ class _AddCustomerState extends State<AddCustomer> {
         DOB.text = formatter.format(selectedDOBDate).toString();
       });
   }
+
   Future<void> _askPermissions(String? routeName) async {
     PermissionStatus permissionStatus = await _getContactPermission();
     if (permissionStatus == PermissionStatus.granted) {
-
     } else {
       _handleInvalidPermissions(permissionStatus);
     }
   }
+
   Future<PermissionStatus> _getContactPermission() async {
     PermissionStatus permission = await Permission.contacts.status;
     if (permission != PermissionStatus.granted &&
@@ -75,10 +74,11 @@ class _AddCustomerState extends State<AddCustomer> {
       return permission;
     }
   }
+
   Future<void> _pickContact() async {
     try {
       final Contact? contact = await ContactsService.openDeviceContactPicker();
-      if(contact != null) {
+      if (contact != null) {
         fname.text = contact.givenName ?? '';
         telnumber.text = contact.phones?.first.value ?? '';
       }
@@ -87,17 +87,17 @@ class _AddCustomerState extends State<AddCustomer> {
     }
   }
 
-
   void _handleInvalidPermissions(PermissionStatus permissionStatus) {
     if (permissionStatus == PermissionStatus.denied) {
       final snackBar = SnackBar(content: Text('Access to contact data denied'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } else if (permissionStatus == PermissionStatus.permanentlyDenied) {
       final snackBar =
-      SnackBar(content: Text('Contact data not available on device'));
+          SnackBar(content: Text('Contact data not available on device'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
+
   @override
   void initState() {
     _askPermissions(null);
@@ -313,7 +313,7 @@ class _AddCustomerState extends State<AddCustomer> {
                               padding: EdgeInsets.only(left: 10),
                               child: DropdownSearch<String>(
                                 mode: Mode.MENU,
-                                items: ["Male", "Female", "Other"],
+                                items: ["male", "female", "other"],
                                 label: "Select Sex",
                                 hint: "Sex",
                                 selectedItem: sex.text,
@@ -345,12 +345,10 @@ class _AddCustomerState extends State<AddCustomer> {
                       ),
                     ),
                     CSCPicker(
-                      stateDropdownLabel: region.text.isEmpty
-                          ? 'State'
-                          : region.text,
-                      countryDropdownLabel: country.text.isEmpty
-                          ? 'Country'
-                          : country.text,
+                      stateDropdownLabel:
+                          region.text.isEmpty ? 'State' : region.text,
+                      countryDropdownLabel:
+                          country.text.isEmpty ? 'Country' : country.text,
                       onCountryChanged: (value) {
                         setState(() {
                           // countryValue = value;
@@ -376,7 +374,6 @@ class _AddCustomerState extends State<AddCustomer> {
                       height: 50,
                       child: Row(
                         children: [
-
                           Expanded(
                             child: GestureDetector(
                               onTap: () async {
@@ -432,8 +429,8 @@ class _AddCustomerState extends State<AddCustomer> {
                                 padding: EdgeInsets.only(left: 10),
                                 child: Image.asset(
                                   widget.isEdit
-                                      ? "images/addcustomer.png"
-                                      : "images/addcustomer.png",
+                                      ? "images/save_customer.png"
+                                      : "images/save_customer.png",
                                   height: 40,
                                   width: 40,
                                 ),

@@ -459,7 +459,7 @@ class _LoginPageState extends State<LoginPage> {
     }).catchError((onError) {
       print(onError);
       ProgressDialog.dismissDialog(context);
-      buildErrorDialog(context, 'title', onError.toString(), () {
+      buildErrorDialog(context, '', 'either password or phone number is wrong kindly check and try again', () {
         Navigator.pop(context);
       });
     });

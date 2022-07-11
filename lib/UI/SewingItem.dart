@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fashionpal/SplashScreen.dart';
 import 'package:fashionpal/UI/AddSewingScreen.dart';
@@ -12,8 +14,9 @@ import 'EditSewingScreen.dart';
 
 class SewingItem extends StatelessWidget {
   DocumentSnapshot? documentSnapshot;
+  final Function celebrityCallback;
 
-  SewingItem(this.documentSnapshot);
+  SewingItem(this.documentSnapshot, this.celebrityCallback);
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +39,7 @@ class SewingItem extends StatelessWidget {
                     new BouncyPageRoute(
                         widget: EditSewingScreen(
                       documentFields: documentSnapshot,
+                      celebrityCallback: celebrityCallback,
                     )));
               },
               child: Container(
@@ -130,34 +134,37 @@ class SewingItem extends StatelessWidget {
                                         CrossAxisAlignment.start,
                                     children: [
                                       isStaffUser
-                                          ? (permissionList[0].isGranted ?? false)
-                                          ?Text(
-                                          (documentSnapshot?.data()
-                                          as Map)['sewingData']
-                                          ['customerData']
-                                          ['phoneNumber']
-                                              .toString(),
-                                          maxLines: 1,
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.normal,
-                                          ),
-                                          textAlign: TextAlign.center)
-                                          : Container()
-                                          :Text(
-                                          (documentSnapshot?.data()
-                                                          as Map)['sewingData']
-                                                      ['customerData']
-                                                  ['phoneNumber']
-                                              .toString(),
-                                          maxLines: 1,
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.normal,
-                                          ),
-                                          textAlign: TextAlign.center),
+                                          ? (permissionList[0].isGranted ??
+                                                  false)
+                                              ? Text(
+                                                  (documentSnapshot?.data()
+                                                                      as Map)[
+                                                                  'sewingData']
+                                                              ['customerData']
+                                                          ['phoneNumber']
+                                                      .toString(),
+                                                  maxLines: 1,
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 11,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                  ),
+                                                  textAlign: TextAlign.center)
+                                              : Container()
+                                          : Text(
+                                              (documentSnapshot?.data() as Map)[
+                                                              'sewingData']
+                                                          ['customerData']
+                                                      ['phoneNumber']
+                                                  .toString(),
+                                              maxLines: 1,
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.normal,
+                                              ),
+                                              textAlign: TextAlign.center),
                                       Text(
                                           (documentSnapshot?.data()
                                                   as Map)['sewingData']['title']
@@ -295,111 +302,60 @@ class SewingItem extends StatelessWidget {
                   children: <Widget>[
                     isStaffUser
                         ? (permissionList[0].isGranted ?? false)
-                        ?     InkWell(
-                    child: Container(
-                      margin: EdgeInsets.only(top: 5, left: 10),
-                      child: Image.asset(
-                        "images/ic_menu.png",
-                        fit: BoxFit.fill,
-                        color: Colors.grey,
-                        height: 25.0,
-                        width: 25.0,
-                      ),
-                    ),
-                    onTapDown: (details) {
-                      showMenu<String>(
-                        context: context,
-                        position: RelativeRect.fromLTRB(
-                          details.globalPosition.dx,
-                          details.globalPosition.dy,
-                          details.globalPosition.dx,
-                          details.globalPosition.dy,
-                        ),
-                        //position where you want to show the menu on screen
-                        items: [
-                          PopupMenuItem<String>(
-                              child: const Text('Edit'), value: '1'),
-                          PopupMenuItem<String>(
-                              child: const Text('Delete'), value: '2'),
-                        ],
-                        elevation: 8.0,
-                      ).then((itemSelected) async {
-                        if (itemSelected == null) return;
-
-                        if (itemSelected == "1") {
-                          //code here
-
-                          Navigator.push(
-                              context,
-                              new BouncyPageRoute(
-                                  widget: EditSewingScreen(
-                                    documentFields: documentSnapshot,
-                                  )));
-                        } else if (itemSelected == "2") {
-                          //code here
-                          await FirebaseFirestore.instance
-                              .collection('sewings')
-                              .doc(documentSnapshot?.id)
-                              .delete();
-                        } else {
-                          //code here
-                        }
-                      });
-                    },
-                    onTap: () {})
-                        : Container()
-                        :    InkWell(
-                        child: Container(
-                          margin: EdgeInsets.only(top: 5, left: 10),
-                          child: Image.asset(
-                            "images/ic_menu.png",
-                            fit: BoxFit.fill,
-                            color: Colors.grey,
-                            height: 25.0,
-                            width: 25.0,
-                          ),
-                        ),
-                        onTapDown: (details) {
-                          showMenu<String>(
-                            context: context,
-                            position: RelativeRect.fromLTRB(
-                              details.globalPosition.dx,
-                              details.globalPosition.dy,
-                              details.globalPosition.dx,
-                              details.globalPosition.dy,
+                            ? InkWell(
+                                child: Container(
+                                  margin: EdgeInsets.only(top: 5, right: 10),
+                                  child: Column(
+                                    children: [
+                                      Image.asset(
+                                        "images/ic_menu.png",
+                                        fit: BoxFit.fill,
+                                        height: 25.0,
+                                        width: 25.0,
+                                        color: Colors.black,
+                                      ),
+                                      Text('Details'),
+                                    ],
+                                  ),
+                                ),
+                                onTap: () async {
+                                  await Navigator.push(
+                                      context,
+                                      new BouncyPageRoute(
+                                          widget: EditSewingScreen(
+                                        documentFields: documentSnapshot,
+                                        celebrityCallback: celebrityCallback,
+                                      )));
+                                  celebrityCallback();
+                                },
+                              )
+                            : Container()
+                        : InkWell(
+                            child: Container(
+                              margin: EdgeInsets.only(top: 5, right: 10),
+                              child: Column(
+                                children: [
+                                  Image.asset(
+                                    "images/ic_menu.png",
+                                    fit: BoxFit.fill,
+                                    height: 25.0,
+                                    width: 25.0,
+                                    color: Colors.black,
+                                  ),
+                                  Text('Details'),
+                                ],
+                              ),
                             ),
-                            //position where you want to show the menu on screen
-                            items: [
-                              PopupMenuItem<String>(
-                                  child: const Text('Edit'), value: '1'),
-                              PopupMenuItem<String>(
-                                  child: const Text('Delete'), value: '2'),
-                            ],
-                            elevation: 8.0,
-                          ).then((itemSelected) async {
-                            if (itemSelected == null) return;
-
-                            if (itemSelected == "1") {
-                              //code here
-
+                            onTap: () async {
                               Navigator.push(
                                   context,
                                   new BouncyPageRoute(
                                       widget: EditSewingScreen(
+                                    celebrityCallback: celebrityCallback,
                                     documentFields: documentSnapshot,
                                   )));
-                            } else if (itemSelected == "2") {
-                              //code here
-                              await FirebaseFirestore.instance
-                                  .collection('sewings')
-                                  .doc(documentSnapshot?.id)
-                                  .delete();
-                            } else {
-                              //code here
-                            }
-                          });
-                        },
-                        onTap: () {}),
+                            },
+                          ),
                     Container(
                       margin: EdgeInsets.only(top: 5, bottom: 10),
                       color: Colors.white,

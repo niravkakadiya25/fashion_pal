@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:csc_picker/csc_picker.dart';
+import 'package:fashionpal/UI/privacy_policy.dart';
 import 'package:fashionpal/Utils/ProgressDialog.dart';
 import 'package:fashionpal/Utils/constants.dart';
 import 'package:fashionpal/Utils/sent-otp.dart';
@@ -455,46 +456,55 @@ class _SignUpScreen extends State<SignUpScreen> {
                                   ),
                                 ),
                                 onTap: () async {
-                                  if (isChecked) {
-                                    ProgressDialog.showLoaderDialog(context);
-                                    submitPhoneNumber(mobileNumberController,
-                                        context, false, true,
-                                        map: {
-                                          'firstName': firstName.text.trim(),
-                                          'lastName': lastName.text.trim(),
-                                          'phoneNumber': mobileNumberController
-                                              .text
-                                              .trim(),
-                                          'companyName':
-                                              companyName.text.trim(),
-                                          'address': address.text.trim(),
-                                          'logo': logoUrl,
-                                          'isEnabled': true,
-                                          'role': 'owner',
-                                          'customersCount': 0,
-                                          'searchMatch': companyName.text
-                                              .toString()
-                                              .replaceAll(' ', '')
-                                              .toLowerCase()
-                                              .toString(),
-                                          'createdAt': DateTime.now(),
-                                          'profileImage': '',
-                                          'sewingsCount': 0,
-                                          'totalExpenditure': 0,
-                                          'staffCount': 0,
-                                          'totalIncome': 0,
-                                          'senderId': 'fashionspal',
-                                          'city': city.text.trim(),
-                                          'country': country.text.trim(),
-                                          'state': region.text.trim(),
-                                        });
-                                    // Navigator.of(context).pop(true);
-                                  } else {
+                                  if (password.text.length < 6) {
                                     buildErrorDialog(context, '',
-                                        'Please read and accept privacy policy',
+                                        'Please Add password more then 6 characters',
                                         () {
                                       Navigator.pop(context);
                                     });
+                                  } else if (formKey.currentState?.validate() ??
+                                      false) {
+                                    if (isChecked) {
+                                      ProgressDialog.showLoaderDialog(context);
+                                      submitPhoneNumber(mobileNumberController,
+                                          context, false, true,
+                                          map: {
+                                            'firstName': firstName.text.trim(),
+                                            'lastName': lastName.text.trim(),
+                                            'phoneNumber':
+                                                mobileNumberController.text
+                                                    .trim(),
+                                            'companyName':
+                                                companyName.text.trim(),
+                                            'address': address.text.trim(),
+                                            'logo': logoUrl,
+                                            'isEnabled': true,
+                                            'role': 'owner',
+                                            'customersCount': 0,
+                                            'searchMatch': companyName.text
+                                                .toString()
+                                                .replaceAll(' ', '')
+                                                .toLowerCase()
+                                                .toString(),
+                                            'createdAt': DateTime.now(),
+                                            'profileImage': '',
+                                            'sewingsCount': 0,
+                                            'totalExpenditure': 0,
+                                            'staffCount': 0,
+                                            'totalIncome': 0,
+                                            'senderId': 'fashionspal',
+                                            'city': city.text.trim(),
+                                            'country': country.text.trim(),
+                                            'state': region.text.trim(),
+                                          });
+                                      // Navigator.of(context).pop(true);
+                                    } else {
+                                      buildErrorDialog(context, '',
+                                          'Please read and accept privacy policy',
+                                          () {
+                                        Navigator.pop(context);
+                                      });
+                                    }
                                   }
                                 })),
                         Row(
@@ -541,7 +551,12 @@ class _SignUpScreen extends State<SignUpScreen> {
                 ),
                 recognizer: TapGestureRecognizer()
                   ..onTap = () {
-                    // code to open / launch terms of service link here
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PrivacyPolicy(),
+                        ));
+                    // code to open / launch ter  ms of service link here
                   }),
             TextSpan(
                 text: ' and ',
@@ -555,6 +570,11 @@ class _SignUpScreen extends State<SignUpScreen> {
                           decoration: TextDecoration.underline),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PrivacyPolicy(),
+                              ));
                           // code to open / launch privacy policy link here
                         })
                 ])

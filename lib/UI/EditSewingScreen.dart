@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_search/dropdown_search.dart';
+import 'package:fashionpal/Database/init_dtabse.dart';
+import 'package:fashionpal/Database/sewing_data.dart';
 import 'package:fashionpal/SplashScreen.dart';
 import 'package:fashionpal/Utils/constants.dart';
 import 'package:fashionpal/Utils/sharPreference.dart';
@@ -18,11 +21,12 @@ class EditSewingScreen extends StatefulWidget {
   final DocumentSnapshot? documentFields;
   final QueryDocumentSnapshot? customerDocumentSnapshot;
   final QueryDocumentSnapshot? staffDocumentSnapshot;
+  final Function celebrityCallback;
 
   const EditSewingScreen({Key? key,
     this.customerDocumentSnapshot,
     this.documentFields,
-    this.staffDocumentSnapshot})
+    this.staffDocumentSnapshot, required this.celebrityCallback})
       : super(key: key);
 
   @override
@@ -156,55 +160,102 @@ class _EditSewingScreenState extends State<EditSewingScreen> {
                           ),
                         ),
                         Expanded(
-                          child:isStaffUser
+                          child: isStaffUser
                               ? (permissionList[0].isGranted ?? false)
-                              ? Container(
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    new BouncyPageRoute(
-                                        widget: AddSewingNewScreen(
-                                          isFromEdit: true,
-                                          sewDetails: widget.documentFields,
-                                          customerDocumentSnapshot:
-                                          widget.customerDocumentSnapshot,
-                                          isFromCustomerScreen: true,
-                                        )));
-                              },
-                              child: Image.asset(
-                                "images/ic_edit.png",
-                                color: Colors.white,
-                                height: 20,
-                                width: 20,
-                              ),
-                            ),
-                          )
-                              : Container()
-                              :  Container(
-                            alignment: Alignment.centerRight,
-                            padding: EdgeInsets.only(right: 20),
-                            child: Container(
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      new BouncyPageRoute(
-                                          widget: AddSewingNewScreen(
-                                            isFromEdit: true,
-                                            sewDetails: widget.documentFields,
-                                            customerDocumentSnapshot:
-                                            widget.customerDocumentSnapshot,
-                                            isFromCustomerScreen: true,
-                                          )));
-                                },
-                                child: Image.asset(
-                                  "images/ic_edit.png",
-                                  color: Colors.white,
-                                  height: 20,
-                                  width: 20,
+                              ? Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Container(
+                                child: InkWell(
+                                  onTap: () async {
+                                    await FirebaseFirestore.instance
+                                        .collection('sewings')
+                                        .doc(widget.documentFields?.id)
+                                        .delete();
+                                    Navigator.pop(context);
+                                    widget.celebrityCallback();
+
+                                  },
+                                  child: Icon(Icons.delete,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
+                              SizedBox(width: 20,),
+                              Container(
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        new BouncyPageRoute(
+                                            widget: AddSewingNewScreen(
+                                              isFromEdit: true,
+                                              sewDetails: widget
+                                                  .documentFields,
+                                              customerDocumentSnapshot:
+                                              widget.customerDocumentSnapshot,
+                                              isFromCustomerScreen: true,
+                                            )));
+                                  },
+                                  child: Image.asset(
+                                    "images/ic_edit.png",
+                                    color: Colors.white,
+                                    height: 20,
+                                    width: 20,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )
+                              : Container()
+                              : Container(
+                            alignment: Alignment.centerRight,
+                            padding: EdgeInsets.only(right: 20),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Container(
+                                  child: InkWell(
+                                    onTap: () async {
+                                      await FirebaseFirestore.instance
+                                          .collection('sewings')
+                                          .doc(widget.documentFields?.id)
+                                          .delete();
+                                      Navigator.pop(context);
+                                      widget.celebrityCallback();
+                                    },
+                                    child: Icon(Icons.delete,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 20,),
+                                Container(
+                                  child: InkWell(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          new BouncyPageRoute(
+                                              widget: AddSewingNewScreen(
+                                                isFromEdit: true,
+                                                sewDetails: widget
+                                                    .documentFields,
+                                                customerDocumentSnapshot:
+                                                widget.customerDocumentSnapshot,
+                                                isFromCustomerScreen: true,
+                                              )));
+                                    },
+                                    child: Image.asset(
+                                      "images/ic_edit.png",
+                                      color: Colors.white,
+                                      height: 20,
+                                      width: 20,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         )
@@ -896,8 +947,85 @@ class _EditSewingScreenState extends State<EditSewingScreen> {
               color: Colors.black,
               decorationColor: Colors.black,
             )),
-        content: Column(
-          children: [],
+        content: StatefulBuilder(
+          builder: (context, setState) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                paymentDialog(
+                    'Cost of Sewing:',
+                    ((widget.documentFields?.data() as Map)['sewingData']
+                    ['cost']
+                        .toString()
+                        .isEmpty
+                        ? 0
+                        : (int.parse(((widget.documentFields?.data()
+                    as Map)['sewingData']['cost'] ??
+                        0)
+                        .toString())))
+                        .toString()),
+                paymentDialog(
+                    'Amount Paid:',
+                    ((widget.documentFields?.data() as Map)['sewingData']
+                    ['amountPaid']
+                        .toString()
+                        .isEmpty
+                        ? 0
+                        : (int.parse(((widget.documentFields?.data()
+                    as Map)['sewingData']['amountPaid'] ??
+                        0)
+                        .toString())))
+                        .toString()),
+                paymentDialog(
+                    'Amount Remaining:',
+                    (((widget.documentFields?.data() as Map)['sewingData']
+                    ['cost']
+                        .toString()
+                        .isEmpty
+                        ? 0
+                        : (int.parse(((widget.documentFields?.data()
+                    as Map)['sewingData']['cost'] ??
+                        0)
+                        .toString()))) -
+                        ((widget.documentFields?.data() as Map)['sewingData']
+                        ['amountPaid']
+                            .toString()
+                            .isEmpty
+                            ? 0
+                            : (int.parse(((widget.documentFields?.data()
+                        as Map)['sewingData']
+                        ['amountPaid'] ??
+                            0)
+                            .toString()))))
+                        .toString()),
+                GestureDetector(
+                  onTap: () async {
+                    await buildAddPaymentDialog();
+                    setState(() {});
+                    print('dfwef');
+                  },
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Container(
+                      child: Text(
+                        '+ ${controller.text.isNotEmpty
+                            ? 'Edit'
+                            : 'Add'} Payment',
+                        textAlign: TextAlign.end,
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                      margin: EdgeInsets.only(top: 10),
+                    ),
+                  ),
+                ),
+                Text(controller.text,
+                    style: TextStyle(
+                      color: Colors.black,
+                      decorationColor: Colors.black,
+                    ))
+              ],
+            );
+          },
         ),
         actions: [
           okButton,
